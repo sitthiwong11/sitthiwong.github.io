@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html lang="th" data-bs-theme="dark" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMPHOREUS | ร้านค้าและตัวแทนจำหน่ายเกมออนไลน์ลิขสิทธิ์แท้ 24 ชม.</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="AMPHOREUS ศูนย์รวมเกมออนไลน์ PC และ Console ลิขสิทธิ์แท้ คีย์เกมราคาพิเศษ จัดส่งออโต้ทันที 24 ชม. พร้อมระบบสมาชิกและการจัดการสิทธิ์ผู้ใช้งาน">
+  <meta name="keywords"
+    content="ขายเกมออนไลน์, ซื้อเกม steam, คีย์เกมแท้, ซื้อเกม pc, เติมเงินเกม, amphoreus, gta v, black myth wukong, cyberpunk 2077, admin panel">
+  <meta name="author" content="รัชต สิทธิวงศ์ (Rachata Sitthiwong)">
+  <meta property="og:title" content="AMPHOREUS | ร้านจำหน่ายเกมออนไลน์ลิขสิทธิ์แท้ 24 ชม.">
+  <meta property="og:description"
+    content="ซื้อเกม PC & Console ลิขสิทธิ์แท้ ลดราคาสูงสุด 80% จัดส่งคีย์ออโต้ทันที ธีมขาว ดำ แดง พร้อมระบบ Login & สิทธิ์ผู้ใช้งาน">
+  <meta property="og:image"
+    content="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ef4444'><path d='M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/></svg>">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome 6.5.1 & Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Google Fonts: Prompt & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- SweetAlert2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+  <!-- Custom White/Black/Red Theme CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Light Theme Overrides (loaded after base styles) -->
+  <link rel="stylesheet" href="css/light-theme.css">
+</head>
+
+<body>
+
+  <div id="app">
+    <!-- Toast Notification Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+      <div v-for="toast in toasts" :key="toast.id" class="toast show align-items-center text-white border-0 mb-2"
+        :class="toast.type === 'error' ? 'bg-danger' : (toast.type === 'info' ? 'bg-secondary text-white' : 'bg-dark border border-light')"
+        style="background: rgba(22, 13, 13, 0.95) !important; border: 1px solid rgba(239, 68, 68, 0.5) !important;"
+        role="alert">
+        <div class="d-flex">
+          <div class="toast-body fw-medium text-white">
+            <i class="fa-solid fa-circle-check text-red-light me-2" v-if="toast.type === 'success'"></i>
+            <i class="fa-solid fa-circle-exclamation text-danger me-2" v-else-if="toast.type === 'error'"></i>
+            <i class="fa-solid fa-circle-info text-white me-2" v-else></i>
+            {{ toast.message }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme Toggle Floating Button -->
+    <button class="floating-theme-btn" @click="toggleTheme"
+      :title="isDarkMode ? 'เปลี่ยนเป็นธีมสว่าง' : 'เปลี่ยนเป็นธีมมืด'" id="themeToggleBtn">
+      <span class="theme-toggle-track">
+        <span class="theme-toggle-thumb">
+          <i :class="isDarkMode ? 'fa-solid fa-moon' : 'fa-solid fa-sun'"></i>
+        </span>
+      </span>
+    </button>
+
+    <!-- Audio Toggle Floating Button -->
+    <button class="floating-audio-btn" @click="toggleSound"
+      :title="isSoundEnabled ? 'ปิดเสียงเอฟเฟกต์' : 'เปิดเสียงเอฟเฟกต์'" id="audioToggleBtn">
+      <i :class="isSoundEnabled ? 'fa-solid fa-volume-high text-white' : 'fa-solid fa-volume-xmark text-muted'"></i>
+    </button>
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+      <div class="container-fluid px-lg-4">
+        <!-- Brand Logo -->
+        <a class="brand-logo" href="#" @click.prevent="setCategory('All'); searchQuery=''">
+          <div class="brand-icon">
+            <i class="fa-solid fa-gamepad text-white"></i>
+          </div>
+          <div>
+            <span class="text-white">AMPHO</span><span class="text-gradient-red">REUS</span>
+            <span class="badge bg-white text-dark ms-2 font-monospace fw-bold"
+              style="font-size: 0.65rem; vertical-align: middle;">STORE</span>
+          </div>
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse"
+          data-bs-target="#navbarMain">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Nav Items -->
+        <div class="collapse navbar-collapse" id="navbarMain">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+            <li class="nav-item">
+              <a class="nav-link-custom active" href="#gamesCatalogSection" @click="setCategory('All')">
+                <i class="fa-solid fa-fire text-red-light"></i> เกมทั้งหมด
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link-custom" href="#" data-bs-toggle="modal" data-bs-target="#couponsModal"
+                @click="playSound('click')">
+                <i class="fa-solid fa-ticket text-red-light"></i> โค้ดส่วนลด
+              </a>
+            </li>
+            <li class="nav-item" v-if="isLoggedIn">
+              <a class="nav-link-custom" href="#" data-bs-toggle="modal" data-bs-target="#libraryModal"
+                @click="playSound('click')">
+                <i class="fa-solid fa-boxes-stacked text-white"></i> คลังเกมของฉัน
+                <span class="badge bg-light text-dark rounded-pill ms-1 fw-bold" v-if="purchasedLibrary.length > 0">{{
+                  purchasedLibrary.length }}</span>
+              </a>
+            </li>
+            <!-- Admin Panel Link (Only visible if Role === Admin) -->
+            <li class="nav-item" v-if="isAdmin">
+              <a class="nav-link-custom text-warning" href="#" data-bs-toggle="modal" data-bs-target="#adminPanelModal"
+                @click="playSound('click')">
+                <i class="fa-solid fa-shield-halved text-warning"></i> แผงควบคุมแอดมิน
+              </a>
+            </li>
+          </ul>
+
+          <!-- Right Side User Actions -->
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+
+            <!-- MySQL Live Status Indicator Pill (แสดงเฉพาะ Admin เท่านั้น) -->
+            <div class="db-status-pill cursor-pointer" data-bs-toggle="modal" data-bs-target="#adminPanelModal"
+              @click="adminActiveTab = 'database'; checkDbStatus(); playSound('click')"
+              :title="dbConnected ? 'เชื่อมต่อฐานข้อมูล MySQL สำเร็จ (amphoreus_db)' : 'MySQL ออฟไลน์ (คลิกเพื่อดูวิธีเชื่อมต่อ)'"
+              v-if="isAdmin">
+              <span class="status-indicator-dot" :class="dbConnected ? 'online' : 'offline'"></span>
+              <i class="fa-solid fa-database text-red-light"></i>
+              <span class="d-none d-sm-inline fw-semibold font-monospace" style="font-size: 0.8rem;">
+                MySQL: <span :class="dbConnected ? 'text-success' : 'text-warning'">{{ dbConnected ? 'CONNECTED' : 'OFFLINE' }}</span>
+              </span>
+            </div>
+
+            <!-- Wallet Balance Pill -->
+            <div class="wallet-pill" data-bs-toggle="modal" data-bs-target="#topupModal" @click="playSound('click')"
+              title="คลิกเพื่อเติมเงิน Wallet" v-if="isLoggedIn">
+              <i class="fa-solid fa-wallet text-red-light"></i>
+              <span class="fw-bold">{{ walletBalance.toLocaleString() }} ฿</span>
+              <span class="badge bg-white text-dark rounded-circle p-1" style="font-size: 0.6rem;"><i
+                  class="fa-solid fa-plus"></i></span>
+            </div>
+
+            <!-- Wishlist Button -->
+            <button class="btn-action-badge" data-bs-toggle="modal" data-bs-target="#wishlistModal"
+              @click="playSound('click')" title="รายการโปรด">
+              <i class="fa-solid fa-heart text-red-light"></i>
+              <span class="d-none d-md-inline">สิ่งที่ชอบ</span>
+              <span class="badge-count" v-if="wishlist.length > 0">{{ wishlist.length }}</span>
+            </button>
+
+            <!-- Cart Drawer Button -->
+            <button class="btn-action-badge btn-cart-glow" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas"
+              @click="playSound('click')">
+              <i class="fa-solid fa-cart-shopping text-white"></i>
+              <span class="d-none d-md-inline">ตะกร้า</span>
+              <span class="badge-count" v-if="cartCount > 0">{{ cartCount }}</span>
+            </button>
+
+            <!-- User Authentication Dropdown or Login Button -->
+            <div class="dropdown ms-1" v-if="isLoggedIn">
+              <div class="user-profile-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+                @click="playSound('click')">
+                <img :src="currentUser.avatar" :alt="currentUser.name" class="user-avatar-sm">
+                <div class="d-none d-sm-block text-start">
+                  <div class="small fw-bold text-white lh-1">{{ currentUser.name }}</div>
+                  <small class="badge p-0" :class="isAdmin ? 'text-warning' : 'text-danger'">
+                    <i class="fa-solid fa-crown" v-if="isAdmin"></i> {{ currentUser.role }}
+                  </small>
+                </div>
+              </div>
+
+              <ul class="dropdown-menu dropdown-menu-cyber dropdown-menu-end shadow-lg mt-2">
+                <li class="px-3 py-2 border-bottom border-secondary mb-1">
+                  <div class="fw-bold text-white">{{ currentUser.name }}</div>
+                  <div class="small text-muted">{{ currentUser.username }}</div>
+                  <div class="mt-1"><span class="badge"
+                      :class="isAdmin ? 'bg-warning text-dark' : 'bg-danger text-white'">สิทธิ์: {{ currentUser.role
+                      }}</span></div>
+                </li>
+
+                <li v-if="isAdmin">
+                  <a class="dropdown-item-cyber text-warning" href="#" data-bs-toggle="modal"
+                    data-bs-target="#adminPanelModal" @click="playSound('click')">
+                    <i class="fa-solid fa-gauge-high"></i> แผงควบคุมระบบ (Admin Panel)
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item-cyber" href="#" data-bs-toggle="modal" data-bs-target="#libraryModal"
+                    @click="playSound('click')">
+                    <i class="fa-solid fa-gamepad"></i> คลังเกมของฉัน (My Library)
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item-cyber" href="#" data-bs-toggle="modal" data-bs-target="#topupModal"
+                    @click="playSound('click')">
+                    <i class="fa-solid fa-wallet"></i> เติมเงิน Wallet ({{ walletBalance.toLocaleString() }} ฿)
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item-cyber" href="#" data-bs-toggle="modal" data-bs-target="#profileSettingsModal"
+                    @click="openProfileSettings(); playSound('click')">
+                    <i class="fa-solid fa-user-pen"></i> ตั้งค่าโปรไฟล์
+                  </a>
+                </li>
+
+                <li>
+                  <hr class="dropdown-divider border-secondary my-1">
+                </li>
+
+                <li>
+                  <a class="dropdown-item-cyber text-danger" href="#" @click.prevent="handleLogout">
+                    <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ (Logout)
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- If Guest (Not Logged In) -->
+            <div class="d-flex gap-2 ms-1" v-else>
+              <button class="btn btn-sm btn-outline-glass" data-bs-toggle="modal" data-bs-target="#loginModal"
+                @click="playSound('click')">
+                <i class="fa-solid fa-right-to-bracket me-1"></i> เข้าสู่ระบบ
+              </button>
+              <button class="btn btn-sm btn-primary-gradient" data-bs-toggle="modal" data-bs-target="#registerModal"
+                @click="playSound('click')">
+                <i class="fa-solid fa-user-plus me-1"></i> สมัครสมาชิก
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= HERO CAROUSEL ================= -->
+    <section class="container-fluid px-lg-4 py-4">
+      <div id="heroGameCarousel" class="carousel slide hero-slider-wrap" data-bs-ride="carousel">
+        <!-- Indicators -->
+        <div class="carousel-indicators mb-3">
+          <button type="button" data-bs-target="#heroGameCarousel" data-bs-slide-to="0" class="active"></button>
+          <button type="button" data-bs-target="#heroGameCarousel" data-bs-slide-to="1"></button>
+          <button type="button" data-bs-target="#heroGameCarousel" data-bs-slide-to="2"></button>
+        </div>
+
+        <div class="carousel-inner">
+          <!-- Slide 1: Black Myth: Wukong -->
+          <div class="carousel-item active">
+            <div class="hero-slide-item"
+              style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80');">
+              <div class="hero-slide-overlay"></div>
+              <div class="hero-slide-content">
+                <span class="badge bg-white text-dark fw-bold mb-2 px-3 py-2 border border-secondary">
+                  <i class="fa-solid fa-crown text-danger me-1"></i> เกมยอดฮิตแห่งปี 2024
+                </span>
+                <h1 class="display-5 fw-extrabold text-white mb-2">Black Myth: Wukong</h1>
+                <p class="text-secondary lead fs-6 mb-3 d-none d-md-block">
+                  สัมผัสมหากาพย์การเดินทางของหงอคงด้วยกราฟิกระดับ Unreal Engine 5
+                  ดำดิ่งสู่โลกไซอิ๋วสุดตระการตาพร้อมคีย์แท้ Steam
+                </p>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                  <div class="fs-4 fw-bold text-white">1,790 ฿</div>
+                  <button class="btn btn-primary-gradient px-4" @click="addToCart(games[0])">
+                    <i class="fa-solid fa-cart-plus"></i> สั่งซื้อทันที
+                  </button>
+                  <button class="btn btn-outline-glass px-3" @click="openGameDetail(games[0])">
+                    <i class="fa-solid fa-circle-info"></i> ดูรายละเอียด
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2: Cyberpunk 2077 -->
+          <div class="carousel-item">
+            <div class="hero-slide-item"
+              style="background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1600&q=80');">
+              <div class="hero-slide-overlay"></div>
+              <div class="hero-slide-content">
+                <span class="badge bg-danger text-white fw-bold mb-2 px-3 py-2 border border-light">
+                  <i class="fa-solid fa-bolt me-1 text-white"></i> ลดพิเศษ -40% HOT DEAL
+                </span>
+                <h1 class="display-5 fw-extrabold text-white mb-2">Cyberpunk 2077: Phantom Liberty</h1>
+                <p class="text-secondary lead fs-6 mb-3 d-none d-md-block">
+                  มหากาพย์ไซเบอร์พังค์โอเพนเวิลด์ในไนท์ซิตี้ พร้อมภาคเสริมสายลับสุดมันส์และ Ray Tracing Overdrive
+                </p>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                  <div class="fs-4 fw-bold text-white">1,180 ฿ <span
+                      class="text-muted text-decoration-line-through fs-6">1,970 ฿</span></div>
+                  <button class="btn btn-primary-gradient px-4" @click="addToCart(games[1])">
+                    <i class="fa-solid fa-cart-plus"></i> สั่งซื้อทันที
+                  </button>
+                  <button class="btn btn-outline-glass px-3" @click="openGameDetail(games[1])">
+                    <i class="fa-solid fa-circle-info"></i> ดูรายละเอียด
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3: Elden Ring -->
+          <div class="carousel-item">
+            <div class="hero-slide-item"
+              style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80');">
+              <div class="hero-slide-overlay"></div>
+              <div class="hero-slide-content">
+                <span class="badge bg-white text-dark fw-bold mb-2 px-3 py-2">
+                  <i class="fa-solid fa-award text-danger me-1"></i> GAME OF THE YEAR
+                </span>
+                <h1 class="display-5 fw-extrabold text-white mb-2">Elden Ring: Shadow of the Erdtree</h1>
+                <p class="text-secondary lead fs-6 mb-3 d-none d-md-block">
+                  สำรวจดินแดนแห่งเงาอันลึกลับ ต่อสู้กับบอสระดับตำนาน จาก FromSoftware รับประกันคีย์แท้ 100%
+                </p>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                  <div class="fs-4 fw-bold text-white">1,390 ฿ <span
+                      class="text-muted text-decoration-line-through fs-6">1,790 ฿</span></div>
+                  <button class="btn btn-primary-gradient px-4" @click="addToCart(games[2])">
+                    <i class="fa-solid fa-cart-plus"></i> สั่งซื้อทันที
+                  </button>
+                  <button class="btn btn-outline-glass px-3" @click="openGameDetail(games[2])">
+                    <i class="fa-solid fa-circle-info"></i> ดูรายละเอียด
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroGameCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroGameCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= PERKS STRIP ================= -->
+    <section class="container-fluid px-lg-4 py-2">
+      <div class="row g-3">
+        <div class="col-6 col-md-3">
+          <div class="perk-card">
+            <div class="perk-icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+            <div>
+              <h6 class="mb-1 fw-bold text-white">ลิขสิทธิ์แท้ 100%</h6>
+              <small class="text-muted">คีย์ตรงจากผู้พัฒนาและตัวแทน</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="perk-card">
+            <div class="perk-icon-box"><i class="fa-solid fa-bolt-lightning text-white"></i></div>
+            <div>
+              <h6 class="mb-1 fw-bold text-white">จัดส่งออโต้ 24 ชม.</h6>
+              <small class="text-muted">รับคีย์ทันทีหลังชำระเงิน</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="perk-card">
+            <div class="perk-icon-box"><i class="fa-solid fa-qrcode text-red-light"></i></div>
+            <div>
+              <h6 class="mb-1 fw-bold text-white">ชำระสะดวกปลอดภัย</h6>
+              <small class="text-muted">PromptPay, Wallet, บัตร</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="perk-card">
+            <div class="perk-icon-box"><i class="fa-solid fa-headset text-white"></i></div>
+            <div>
+              <h6 class="mb-1 fw-bold text-white">ดูแลตลอดการใช้งาน</h6>
+              <small class="text-muted">ประกันคีย์ เคลมได้ 100%</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROMO BANNER: SPECIAL PROMOTION ================= -->
+    <section class="container-fluid px-lg-4 my-4">
+      <div class="p-4 rounded-4"
+        style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.22) 0%, rgba(22, 12, 12, 0.95) 100%); border: 1px solid rgba(248, 113, 113, 0.45); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);">
+        <div class="row align-items-center">
+          <div class="col-lg-8 text-lg-start text-center">
+            <span class="badge bg-white text-dark fw-bold px-3 py-2 mb-2 border border-secondary">
+              <i class="fa-solid fa-fire text-danger me-1"></i> SPECIAL MEMBER DEALS
+            </span>
+            <h2 class="text-white fw-bold mb-2">
+              ศูนย์รวมเกมแท้ลดราคาสูงสุด <span class="text-gradient-red">80%</span> จัดส่งคีย์ออโต้ทันที 24 ชม.
+            </h2>
+            <p class="text-secondary mb-3 mb-lg-0">
+              ซื้อเกม PC & Console ลิขสิทธิ์แท้ 100% ปลอดภัย มั่นใจได้ พร้อมรับส่วนลดพิเศษเมื่อใช้โค้ด
+              <strong>GAMEON10</strong> หรือ <strong>STUDENTVIP</strong>
+            </p>
+          </div>
+          <div class="col-lg-4 text-center text-lg-end">
+            <button class="btn btn-white-solid btn-lg px-4" data-bs-toggle="modal" data-bs-target="#couponsModal"
+              @click="playSound('click')">
+              <i class="fa-solid fa-ticket text-danger me-2"></i> รับโค้ดส่วนลดเลย
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MAIN CATALOG SECTION ================= -->
+    <section class="container-fluid px-lg-4 py-3" id="gamesCatalogSection">
+
+      <!-- Filter & Search Toolbar -->
+      <div class="filter-wrapper">
+        <div class="row g-3 align-items-center">
+          <!-- Search input -->
+          <div class="col-12 col-md-5">
+            <div class="search-input-group">
+              <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+              <input type="text" class="form-control"
+                placeholder="ค้นหาชื่อเกม, หมวดหมู่, แนวเกม เช่น Wukong, Open World..." v-model="searchQuery"
+                id="gameSearchInput">
+            </div>
+          </div>
+
+          <!-- Platform Filter Buttons -->
+          <div class="col-12 col-md-4">
+            <div class="d-flex gap-1 flex-wrap">
+              <button v-for="plat in platforms" :key="plat" class="btn btn-sm"
+                :class="selectedPlatform === plat ? 'btn-primary-gradient' : 'btn-outline-glass'"
+                @click="setPlatform(plat)">
+                {{ plat }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Sort and Price dropdowns -->
+          <div class="col-12 col-md-3 d-flex gap-2">
+            <select class="form-select form-select-sm bg-dark text-white border-secondary"
+              v-model="selectedPriceFilter">
+              <option value="all">ทุกช่วงราคา</option>
+              <option value="discount">เฉพาะลดราคา 🔥</option>
+              <option value="under500">ต่ำกว่า 500 ฿</option>
+              <option value="500-1000">500 - 1,000 ฿</option>
+              <option value="over1000">มากกว่า 1,000 ฿</option>
+            </select>
+
+            <select class="form-select form-select-sm bg-dark text-white border-secondary" v-model="sortBy">
+              <option value="popular">ยอดนิยม</option>
+              <option value="price-asc">ราคา: ต่ำ ➔ สูง</option>
+              <option value="price-desc">ราคา: สูง ➔ ต่ำ</option>
+              <option value="rating">เรตติ้งสูงสุด</option>
+              <option value="discount">ลดราคามากสุด</option>
+              <option value="new">เกมมาใหม่</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="d-flex gap-2 overflow-x-auto pt-3 pb-1">
+          <button v-for="cat in categories" :key="cat" class="category-tab-btn"
+            :class="{ active: selectedCategory === cat }" @click="setCategory(cat)">
+            {{ cat === 'All' ? '🎮 ทุกหมวดหมู่' : cat }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Catalog Status Bar -->
+      <div class="d-flex justify-content-between align-items-center mb-3 text-secondary">
+        <div>
+          <span>พบทั้งหมด </span>
+          <strong class="text-white">{{ filteredGames.length }}</strong>
+          <span> รายการ</span>
+          <span v-if="searchQuery" class="ms-2 badge bg-danger text-white border border-light">ค้นหา: "{{ searchQuery
+            }}"</span>
+          <span v-if="selectedCategory !== 'All'" class="ms-1 badge bg-dark border border-secondary text-white">{{
+            selectedCategory }}</span>
+          <span v-if="selectedPlatform !== 'All'" class="ms-1 badge bg-white text-dark">{{ selectedPlatform }}</span>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-glass"
+            v-if="searchQuery || selectedCategory !== 'All' || selectedPlatform !== 'All' || selectedPriceFilter !== 'all'"
+            @click="searchQuery=''; selectedCategory='All'; selectedPlatform='All'; selectedPriceFilter='all'">
+            <i class="fa-solid fa-rotate-left me-1"></i> ล้างตัวกรอง
+          </button>
+        </div>
+      </div>
+
+      <!-- Game Cards Grid -->
+      <div class="row g-3 g-lg-4" v-if="filteredGames.length > 0">
+        <div class="col-12 col-sm-6 col-md-4 col-xl-3" v-for="game in filteredGames" :key="game.id">
+          <div class="game-card">
+            <!-- Image with Overlay Badges -->
+            <div class="game-card-img-wrap" @click="openGameDetail(game)">
+              <img :src="game.coverImage" :alt="game.title" class="game-card-img" loading="lazy">
+              <span class="game-badge-discount" v-if="game.discount > 0">-{{ game.discount }}%</span>
+              <span class="game-badge-hot" v-if="game.isHot"><i class="fa-solid fa-fire text-danger"></i> HOT</span>
+
+              <!-- Wishlist Heart Button -->
+              <button class="game-wishlist-btn" :class="{ active: isInWishlist(game.id) }"
+                @click.stop="toggleWishlist(game)"
+                :title="isInWishlist(game.id) ? 'นำออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+            </div>
+
+            <!-- Card Content Body -->
+            <div class="game-card-body">
+              <!-- Platform Pills & Rating -->
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="d-flex gap-1 flex-wrap">
+                  <span class="game-platform-tag" v-for="p in game.platforms" :key="p">{{ p }}</span>
+                </div>
+                <div class="text-white small fw-bold">
+                  <i class="fa-solid fa-star text-red-light"></i> {{ game.rating }}
+                </div>
+              </div>
+
+              <!-- Title -->
+              <h3 class="game-title" @click="openGameDetail(game)" :title="game.title">{{ game.title }}</h3>
+              <div class="game-title-th">{{ game.titleTh }}</div>
+
+              <!-- Tags preview -->
+              <div class="d-flex gap-1 flex-wrap mb-2">
+                <span class="badge bg-dark border border-secondary text-secondary" style="font-size: 0.65rem;"
+                  v-for="tag in game.tags.slice(0, 3)" :key="tag">
+                  #{{ tag }}
+                </span>
+              </div>
+
+              <!-- Price & Buy Button -->
+              <div class="game-price-wrap">
+                <div>
+                  <span class="price-current">{{ game.price.toLocaleString() }} ฿</span>
+                  <span class="price-original" v-if="game.discount > 0">{{ game.originalPrice.toLocaleString() }}
+                    ฿</span>
+                </div>
+                <button class="btn-card-buy" @click="addToCart(game)" title="ใส่ตะกร้าสินค้า">
+                  <i class="fa-solid fa-cart-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Games Found State -->
+      <div class="text-center py-5" v-else>
+        <div class="display-1 text-muted mb-3"><i class="fa-solid fa-gamepad text-red-light"></i></div>
+        <h4 class="text-white">ไม่พบเกมที่คุณค้นหา</h4>
+        <p class="text-secondary">ลองปรับเปลี่ยนคำค้นหา หรือล้างตัวกรองหมวดหมู่</p>
+        <button class="btn btn-outline-glass px-4 mt-2"
+          @click="searchQuery=''; selectedCategory='All'; selectedPlatform='All'; selectedPriceFilter='all'">
+          แสดงเกมทั้งหมด
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= MODAL: MYSQL DATABASE STATUS (Only for Admin) ================= -->
+    <div class="modal fade" id="dbStatusModal" tabindex="-1" aria-labelledby="dbStatusModalLabel" aria-hidden="true" v-if="isAdmin">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-content-cyber border border-danger">
+          <div class="modal-header modal-header-cyber">
+            <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2" id="dbStatusModalLabel">
+              <i class="fa-solid fa-database text-red-light"></i> การเชื่อมต่อฐานข้อมูล MySQL (Database Manager)
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <!-- Live Status Alert Card -->
+            <div class="p-3 rounded mb-4" :style="dbConnected ? 'background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4);' : 'background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4);'">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center" :class="dbConnected ? 'bg-success text-white' : 'bg-danger text-white'" style="width: 46px; height: 46px; font-size: 1.25rem;">
+                    <i :class="dbConnected ? 'fa-solid fa-check' : 'fa-solid fa-triangle-exclamation'"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-1" :class="dbConnected ? 'text-success' : 'text-danger'">
+                      {{ dbConnected ? '🟢 เชื่อมต่อฐานข้อมูล MySQL สำเร็จแล้ว (Database Online)' : '🔴 ไม่สามารถเชื่อมต่อกับฐานข้อมูล MySQL ได้ (Database Offline)' }}
+                    </h6>
+                    <div class="small text-white-50">
+                      <span v-if="dbConnected">Database: <b class="text-white font-monospace">amphoreus_db</b> | Server: <b class="text-white font-monospace">127.0.0.1:3306</b> (XAMPP MariaDB)</span>
+                      <span v-else>ระบบจะใช้งาน LocalStorage สำรองแทนชั่วคราว | โปรดเปิด XAMPP Control Panel และกด Start ที่ MySQL</span>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-light" @click="refreshDatabaseData(true); playSound('click')" :disabled="isDbSyncing">
+                  <i class="fa-solid fa-arrows-rotate me-1" :class="{'fa-spin': isDbSyncing}"></i> ตรวจสอบสถานะใหม่
+                </button>
+              </div>
+            </div>
+
+            <!-- Tables Info Card Grid -->
+            <h6 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+              <i class="fa-solid fa-table-list text-red-light"></i> ข้อมูลตารางในฐานข้อมูล MySQL (Tables & Records)
+            </h6>
+            <div class="row g-3 mb-4">
+              <div class="col-6 col-md-3">
+                <div class="p-3 rounded bg-dark border border-secondary text-center">
+                  <div class="text-white-50 small mb-1">🎮 games</div>
+                  <div class="fs-4 fw-bold text-white">{{ games.length }}</div>
+                  <div class="text-white-50" style="font-size: 0.75rem;">รายการเกมในคลัง</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-3 rounded bg-dark border border-secondary text-center">
+                  <div class="text-white-50 small mb-1">👥 users</div>
+                  <div class="fs-4 fw-bold text-white">{{ users.length }}</div>
+                  <div class="text-white-50" style="font-size: 0.75rem;">สมาชิก & แอดมิน</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-3 rounded bg-dark border border-secondary text-center">
+                  <div class="text-white-50 small mb-1">🎟️ coupons</div>
+                  <div class="fs-4 fw-bold text-white">{{ Object.keys(coupons).length }}</div>
+                  <div class="text-white-50" style="font-size: 0.75rem;">โค้ดคูปองส่วนลด</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-3 rounded bg-dark border border-secondary text-center">
+                  <div class="text-white-50 small mb-1">📦 order_transactions</div>
+                  <div class="fs-4 fw-bold text-white">{{ orderTransactions.length }}</div>
+                  <div class="text-white-50" style="font-size: 0.75rem;">ประวัติคำสั่งซื้อ</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tools & Action Buttons -->
+            <div class="p-3 rounded bg-dark border border-secondary">
+              <h6 class="fw-bold text-white mb-2 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-screwdriver-wrench text-red-light"></i> คำสั่งและการจัดการฐานข้อมูล
+              </h6>
+              <p class="small text-white-50 mb-3">
+                ท่านสามารถรีเซ็ตหรือนำเข้าชุดข้อมูลเริ่มต้น (Initial Seeds) เข้าสู่ MySQL ได้ทันทีด้วยปุ่มด้านล่าง
+              </p>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-danger text-white fw-bold px-3 py-2" @click="resetAndSeedDb(); playSound('click')">
+                  <i class="fa-solid fa-wand-magic-sparkles me-1"></i> ติดตั้ง / รีเซ็ตโครงสร้างฐานข้อมูล (Re-seed DB)
+                </button>
+                <a href="http://localhost/phpmyadmin/index.php?route=/database/structure&db=amphoreus_db" target="_blank" class="btn btn-sm btn-outline-light px-3 py-2">
+                  <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> เปิด phpMyAdmin (amphoreus_db)
+                </a>
+                <a href="database.sql" download="amphoreus_db.sql" class="btn btn-sm btn-outline-secondary text-white px-3 py-2">
+                  <i class="fa-solid fa-download me-1"></i> ดาวน์โหลดไฟล์ database.sql
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: LOGIN ================= -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber">
+            <h5 class="modal-title fw-bold text-white">
+              <i class="fa-solid fa-right-to-bracket text-red-light me-2"></i> เข้าสู่ระบบ (Login)
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <!-- Standard Form -->
+            <form @submit.prevent="handleLogin">
+              <div class="mb-3">
+                <label class="form-label text-white small">อีเมล / Username:</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-dark border-secondary text-red-light"><i
+                      class="fa-solid fa-envelope"></i></span>
+                  <input type="email" class="form-control bg-dark text-white border-secondary"
+                    placeholder="เช่น user@amphoreus.com" v-model="loginForm.username" required>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label text-white small">รหัสผ่าน:</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-dark border-secondary text-red-light"><i
+                      class="fa-solid fa-lock"></i></span>
+                  <input type="password" class="form-control bg-dark text-white border-secondary"
+                    placeholder="กรอกรหัสผ่าน" v-model="loginForm.password" required>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary-gradient w-100 py-2 fw-bold mb-3">
+                <i class="fa-solid fa-right-to-bracket me-1"></i> เข้าสู่ระบบ
+              </button>
+            </form>
+
+            <div class="text-center small text-secondary">
+              ยังไม่มีบัญชีใช่หรือไม่?
+              <a href="#" class="text-red-light fw-bold text-decoration-none" data-bs-toggle="modal"
+                data-bs-target="#registerModal">
+                สมัครสมาชิกใหม่
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: REGISTER ================= -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber">
+            <h5 class="modal-title fw-bold text-white">
+              <i class="fa-solid fa-user-plus text-red-light me-2"></i> สมัครสมาชิกใหม่ (Register)
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <form @submit.prevent="handleRegister">
+              <div class="mb-3">
+                <label class="form-label text-white small">ชื่อ - นามสกุล หรือชื่อผู้เล่น:</label>
+                <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="username"
+                  v-model="registerForm.name" required>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label text-white small">อีเมล (ใช้เป็น Username ล็อกอิน):</label>
+                <input type="email" class="form-control bg-dark text-white border-secondary"
+                  placeholder="name@example.com" v-model="registerForm.username" required>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label text-white small">รหัสผ่าน:</label>
+                <input type="password" class="form-control bg-dark text-white border-secondary"
+                  placeholder="อย่างน้อย 6 ตัวอักษร" v-model="registerForm.password" required>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label text-white small">ยืนยันรหัสผ่านอีกครั้ง:</label>
+                <input type="password" class="form-control bg-dark text-white border-secondary"
+                  placeholder="ยืนยันรหัสผ่าน" v-model="registerForm.confirmPassword" required>
+              </div>
+
+              <button type="submit" class="btn btn-white-solid w-100 py-2 fw-bold mb-3">
+                <i class="fa-solid fa-check-circle me-1"></i> ยืนยันสมัครสมาชิก
+              </button>
+            </form>
+
+            <div class="text-center small text-secondary">
+              มีบัญชีอยู่แล้ว?
+              <a href="#" class="text-red-light fw-bold text-decoration-none" data-bs-toggle="modal"
+                data-bs-target="#loginModal">
+                เข้าสู่ระบบที่นี่
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: ADMIN CONTROL PANEL ================= -->
+    <div class="modal fade" id="adminPanelModal" tabindex="-1" aria-hidden="true" v-if="isAdmin">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="modal-title fw-bold text-white mb-0">
+                <i class="fa-solid fa-shield-halved text-warning me-2"></i> แผงควบคุมระบบ (Admin Control Center)
+              </h4>
+              <small class="text-muted">ระบบจัดการแคตตาล็อกเกม, คูปองส่วนลด, ยอดขาย และสิทธิ์ผู้ใช้งาน</small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <!-- Admin Tabs -->
+            <ul class="nav nav-tabs-admin mb-4">
+              <li class="nav-item">
+                <button class="nav-link" :class="{ active: adminActiveTab === 'dashboard' }"
+                  @click="adminActiveTab = 'dashboard'">
+                  <i class="fa-solid fa-chart-pie me-1"></i> ภาพรวมสถิติ
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" :class="{ active: adminActiveTab === 'games' }"
+                  @click="adminActiveTab = 'games'">
+                  <i class="fa-solid fa-gamepad me-1"></i> จัดการเกม ({{ games.length }})
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" :class="{ active: adminActiveTab === 'coupons' }"
+                  @click="adminActiveTab = 'coupons'">
+                  <i class="fa-solid fa-ticket me-1"></i> คูปองส่วนลด
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" :class="{ active: adminActiveTab === 'users' }"
+                  @click="adminActiveTab = 'users'">
+                  <i class="fa-solid fa-users me-1"></i> ผู้ใช้และสิทธิ์ ({{ users.length }})
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" :class="{ active: adminActiveTab === 'orders' }"
+                  @click="adminActiveTab = 'orders'">
+                  <i class="fa-solid fa-receipt me-1"></i> ประวัติคำสั่งซื้อ ({{ orderTransactions.length }})
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" :class="{ active: adminActiveTab === 'database' }"
+                  @click="adminActiveTab = 'database'; checkDbStatus()">
+                  <i class="fa-solid fa-database me-1"></i> ฐานข้อมูล (Database)
+                  <span class="badge ms-1" :class="dbConnected ? 'bg-success' : 'bg-warning text-dark'" style="font-size: 0.65rem;">
+                    {{ dbConnected ? 'ONLINE' : 'OFFLINE' }}
+                  </span>
+                </button>
+              </li>
+            </ul>
+
+            <!-- TAB 1: DASHBOARD METRICS -->
+            <div v-if="adminActiveTab === 'dashboard'">
+              <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                  <div class="admin-stat-card">
+                    <div class="admin-stat-icon"><i class="fa-solid fa-coins text-warning"></i></div>
+                    <div>
+                      <div class="text-muted small">ยอดขายรวมทั้งหมด</div>
+                      <h4 class="text-white fw-bold mb-0">{{ totalSalesRevenue.toLocaleString() }} ฿</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                  <div class="admin-stat-card">
+                    <div class="admin-stat-icon"><i class="fa-solid fa-cart-check text-success"></i></div>
+                    <div>
+                      <div class="text-muted small">จำนวนออเดอร์</div>
+                      <h4 class="text-white fw-bold mb-0">{{ totalOrdersCount }} รายการ</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                  <div class="admin-stat-card">
+                    <div class="admin-stat-icon"><i class="fa-solid fa-gamepad text-info"></i></div>
+                    <div>
+                      <div class="text-muted small">เกมทั้งหมดในร้าน</div>
+                      <h4 class="text-white fw-bold mb-0">{{ games.length }} เกม</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                  <div class="admin-stat-card">
+                    <div class="admin-stat-icon"><i class="fa-solid fa-users text-danger"></i></div>
+                    <div>
+                      <div class="text-muted small">ผู้ใช้งานในระบบ</div>
+                      <h4 class="text-white fw-bold mb-0">{{ users.length }} บัญชี</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Action Toolbar -->
+              <div
+                class="p-3 bg-dark rounded border border-secondary d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                  <h6 class="text-white fw-bold mb-0">การจัดการด่วน (Quick Actions)</h6>
+                  <small class="text-muted">เพิ่มสินค้าใหม่ หรือจัดการสิทธิ์ผู้ใช้งานได้ทันที</small>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-sm btn-primary-gradient" @click="openAddGameModal">
+                    <i class="fa-solid fa-plus me-1"></i> เพิ่มเกมใหม่
+                  </button>
+                  <button class="btn btn-sm btn-outline-glass" @click="adminActiveTab = 'users'">
+                    <i class="fa-solid fa-user-shield me-1"></i> ดูสิทธิ์ผู้ใช้
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" @click="adminActiveTab = 'database'; checkDbStatus()">
+                    <i class="fa-solid fa-database me-1"></i> จัดการฐานข้อมูล
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 2: GAME MANAGEMENT (CRUD) -->
+            <div v-if="adminActiveTab === 'games'">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white fw-bold mb-0">รายการเกมในระบบ</h5>
+                <button class="btn btn-primary-gradient btn-sm" @click="openAddGameModal">
+                  <i class="fa-solid fa-plus me-1"></i> เพิ่มเกมใหม่เข้าคลัง
+                </button>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-cyber align-middle">
+                  <thead>
+                    <tr>
+                      <th>หน้าปก</th>
+                      <th>ชื่อเกม</th>
+                      <th>หมวดหมู่</th>
+                      <th>แพลตฟอร์ม</th>
+                      <th>ราคา</th>
+                      <th>ส่วนลด</th>
+                      <th class="text-end">การจัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="g in games" :key="g.id">
+                      <td style="width: 60px;">
+                        <img :src="g.coverImage" :alt="g.title" class="rounded"
+                          style="width: 48px; height: 36px; object-fit: cover;">
+                      </td>
+                      <td>
+                        <div class="fw-bold text-white">{{ g.title }}</div>
+                        <small class="text-muted">{{ g.titleTh }}</small>
+                      </td>
+                      <td><span class="badge bg-dark border border-secondary text-white">{{ g.category }}</span></td>
+                      <td>
+                        <span class="badge bg-secondary me-1" style="font-size: 0.7rem;" v-for="p in g.platforms"
+                          :key="p">{{ p }}</span>
+                      </td>
+                      <td class="fw-bold text-white">{{ g.price.toLocaleString() }} ฿</td>
+                      <td>
+                        <span class="badge bg-danger" v-if="g.discount > 0">-{{ g.discount }}%</span>
+                        <span class="text-muted small" v-else>-</span>
+                      </td>
+                      <td class="text-end">
+                        <button class="btn btn-sm btn-outline-info py-0 px-2 me-1" @click="openEditGameModal(g)"
+                          title="แก้ไข">
+                          <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2" @click="deleteGameFromAdmin(g)"
+                          title="ลบ">
+                          <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- TAB 3: COUPONS MANAGEMENT -->
+            <div v-if="adminActiveTab === 'coupons'">
+              <div class="row g-4">
+                <div class="col-lg-5">
+                  <div class="p-3 bg-dark rounded border border-secondary">
+                    <h6 class="text-white fw-bold mb-3"><i class="fa-solid fa-plus-circle text-danger me-1"></i>
+                      สร้างคูปองส่วนลดใหม่</h6>
+                    <form @submit.prevent="addCouponFromAdmin">
+                      <div class="mb-2">
+                        <label class="form-label text-white small">รหัสโค้ด (เช่น FLASH20):</label>
+                        <input type="text"
+                          class="form-control form-control-sm bg-dark text-white border-secondary text-uppercase"
+                          v-model="couponForm.code" required>
+                      </div>
+                      <div class="row g-2 mb-2">
+                        <div class="col-6">
+                          <label class="form-label text-white small">ประเภทส่วนลด:</label>
+                          <select class="form-select form-select-sm bg-dark text-white border-secondary"
+                            v-model="couponForm.type">
+                            <option value="percent">เปอร์เซ็นต์ (%)</option>
+                            <option value="fixed">จำนวนเงิน (฿)</option>
+                          </select>
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label text-white small">มูลค่าส่วนลด:</label>
+                          <input type="number" class="form-control form-control-sm bg-dark text-white border-secondary"
+                            v-model="couponForm.value" required>
+                        </div>
+                      </div>
+                      <div class="mb-2">
+                        <label class="form-label text-white small">ยอดซื้อขั้นต่ำ (บาท):</label>
+                        <input type="number" class="form-control form-control-sm bg-dark text-white border-secondary"
+                          v-model="couponForm.minSpend">
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label text-white small">คำอธิบาย:</label>
+                        <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary"
+                          placeholder="เช่น ลด 20% เมื่อซื้อครบ 500 บาท" v-model="couponForm.description">
+                      </div>
+                      <button type="submit" class="btn btn-sm btn-primary-gradient w-100">
+                        <i class="fa-solid fa-plus me-1"></i> บันทึกคูปอง
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                <div class="col-lg-7">
+                  <h6 class="text-white fw-bold mb-3">คูปองที่ใช้งานได้ในระบบ</h6>
+                  <div class="d-grid gap-2">
+                    <div
+                      class="p-3 bg-dark rounded border border-secondary d-flex justify-content-between align-items-center"
+                      v-for="(c, code) in coupons" :key="code">
+                      <div>
+                        <span class="badge bg-white text-dark font-monospace fw-bold mb-1">{{ c.code }}</span>
+                        <div class="text-white fw-bold">{{ c.description }}</div>
+                        <small class="text-muted">ขั้นต่ำ: {{ c.minSpend }} ฿</small>
+                      </div>
+                      <button class="btn btn-sm btn-outline-danger" @click="deleteCouponFromAdmin(code)"
+                        title="ลบคูปอง">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 4: USERS & RBAC PERMISSIONS -->
+            <div v-if="adminActiveTab === 'users'">
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                <div>
+                  <h5 class="text-white fw-bold mb-1">
+                    <i class="fa-solid fa-users-gear text-danger me-2"></i> จัดการสิทธิ์ผู้ใช้งาน (Role-Based Access Control)
+                  </h5>
+                  <small class="text-muted">ตรวจสอบรายชื่อผู้ใช้งานและจัดการสลับสิทธิ์การเข้าถึง (Admin / Member)</small>
+                </div>
+                <span class="badge bg-secondary bg-opacity-25 text-white border border-secondary px-3 py-2">
+                  <i class="fa-solid fa-users me-1 text-danger"></i> ทั้งหมด {{ users.length }} บัญชี
+                </span>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-cyber align-middle">
+                  <thead>
+                    <tr>
+                      <th>ผู้ใช้</th>
+                      <th>อีเมล / Username</th>
+                      <th>ยอด Wallet</th>
+                      <th>สิทธิ์ปัจจุบัน (Role)</th>
+                      <th>วันที่สมัคร</th>
+                      <th class="text-end">การจัดการสิทธิ์</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="u in users" :key="u.id">
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <img :src="u.avatar" :alt="u.name" class="user-avatar-sm">
+                          <div>
+                            <span class="fw-bold text-white d-block">{{ u.name }}</span>
+                            <span v-if="currentUser && u.id === currentUser.id" class="badge bg-info text-dark"
+                              style="font-size: 0.65rem;">
+                              <i class="fa-solid fa-user-check me-1"></i>บัญชีปัจจุบันของคุณ
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{{ u.username }}</td>
+                      <td class="text-white fw-bold">{{ u.wallet.toLocaleString() }} ฿</td>
+                      <td>
+                        <span class="badge"
+                          :class="u.role === 'Admin' ? 'bg-warning text-dark' : 'bg-danger text-white'">
+                          {{ u.role }}
+                        </span>
+                      </td>
+                      <td class="text-muted small">{{ u.joinedDate }}</td>
+                      <td class="text-end">
+                        <button class="btn btn-sm"
+                          :class="u.role === 'Admin' ? 'btn-outline-secondary' : 'btn-outline-warning'"
+                          @click="toggleUserRole(u)" :disabled="currentUser && u.id === currentUser.id"
+                          :title="currentUser && u.id === currentUser.id ? 'ไม่สามารถเปลี่ยนสิทธิ์ของบัญชีที่กำลังใช้งานอยู่ได้' : 'สลับสิทธิ์ Admin / Member'">
+                          <i class="fa-solid fa-user-shield me-1"></i> สลับสิทธิ์
+                        </button>
+                      </td>
+                    </tr>
+                    <tr v-if="users.length === 0">
+                      <td colspan="6" class="text-center py-4 text-muted">
+                        <i class="fa-solid fa-user-slash fs-3 d-block mb-2 text-secondary"></i>
+                        ไม่พบข้อมูลผู้ใช้งานในระบบ
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- TAB 5: ORDER TRANSACTIONS -->
+            <div v-if="adminActiveTab === 'orders'">
+              <h5 class="text-white fw-bold mb-3">บันทึกคำสั่งซื้อและการออกคีย์เกมทั้งหมด</h5>
+              <div v-if="orderTransactions.length > 0" class="table-responsive">
+                <table class="table table-cyber align-middle">
+                  <thead>
+                    <tr>
+                      <th>วันที่</th>
+                      <th>ลูกค้า</th>
+                      <th>เกม</th>
+                      <th>แพลตฟอร์ม</th>
+                      <th>ราคา</th>
+                      <th>CD-Key ที่ออก</th>
+                      <th>ช่องทางชำระ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="ord in orderTransactions" :key="ord.id">
+                      <td class="text-muted small">{{ ord.purchaseDate }}</td>
+                      <td>
+                        <div class="fw-bold text-white">{{ ord.userName }}</div>
+                        <small class="text-muted">{{ ord.userEmail }}</small>
+                      </td>
+                      <td>{{ ord.gameTitle }}</td>
+                      <td><span class="badge bg-secondary">{{ ord.platform }}</span></td>
+                      <td class="text-white fw-bold">{{ ord.price.toLocaleString() }} ฿</td>
+                      <td><code class="text-danger fw-bold">{{ ord.key }}</code></td>
+                      <td><span class="badge bg-dark border border-secondary text-white">{{ ord.paymentMethod }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="text-center py-4 text-muted" v-else>
+                <i class="fa-solid fa-receipt fs-1 mb-2"></i>
+                <div>ยังไม่มีประวัติคำสั่งซื้อในระบบ</div>
+              </div>
+            </div>
+
+            <!-- TAB 6: DATABASE MANAGEMENT (Admin Control Exclusive) -->
+            <div v-if="adminActiveTab === 'database'">
+              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                  <h5 class="text-white fw-bold mb-0">
+                    <i class="fa-solid fa-database text-red-light me-2"></i> สถานะและการจัดการฐานข้อมูล MySQL
+                  </h5>
+                  <small class="text-muted">ข้อมูลและเครื่องมือควบคุม Database นี้แสดงและจัดการได้เฉพาะผู้ดูแลระบบ (Admin) เท่านั้น</small>
+                </div>
+                <button class="btn btn-sm btn-outline-light" @click="refreshDatabaseData(true); playSound('click')" :disabled="isDbSyncing">
+                  <i class="fa-solid fa-arrows-rotate me-1" :class="{'fa-spin': isDbSyncing}"></i> ตรวจสอบสถานะและซิงค์ข้อมูลใหม่
+                </button>
+              </div>
+
+              <!-- Live Status Alert Card -->
+              <div class="p-3 rounded mb-4" :style="dbConnected ? 'background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4);' : 'background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4);'">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" :class="dbConnected ? 'bg-success text-white' : 'bg-danger text-white'" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                      <i :class="dbConnected ? 'fa-solid fa-check' : 'fa-solid fa-triangle-exclamation'"></i>
+                    </div>
+                    <div>
+                      <h6 class="fw-bold mb-1" :class="dbConnected ? 'text-success' : 'text-danger'">
+                        {{ dbConnected ? '🟢 ฐานข้อมูล MySQL เชื่อมต่อสำเร็จ (Database Online)' : '🔴 ไม่สามารถเชื่อมต่อกับฐานข้อมูล MySQL ได้ (Database Offline)' }}
+                      </h6>
+                      <div class="small text-white-50">
+                        <span v-if="dbConnected">Database Name: <b class="text-white font-monospace">amphoreus_db</b> | Server: <b class="text-white font-monospace">127.0.0.1:3306</b> (MariaDB/MySQL) | API: <b class="text-white font-monospace">/api/*.php</b></span>
+                        <span v-else>ระบบสำรองข้อมูลไว้ใน LocalStorage ชั่วคราว | แนะนำให้เปิด XAMPP Control Panel และกด Start ที่โมดูล MySQL และ Apache</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <span class="badge px-3 py-2 fs-6" :class="dbConnected ? 'bg-success' : 'bg-danger'">
+                      {{ dbConnected ? 'STATUS: ACTIVE' : 'STATUS: DISCONNECTED' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tables Info Card Grid -->
+              <h6 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-table-list text-red-light"></i> ข้อมูลตารางในฐานข้อมูล MySQL (Tables & Record Counts)
+              </h6>
+              <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                  <div class="p-3 rounded bg-dark border border-secondary text-center">
+                    <div class="text-white-50 small mb-1">🎮 games (แคตตาล็อกเกม)</div>
+                    <div class="fs-4 fw-bold text-white">{{ games.length }}</div>
+                    <div class="text-white-50" style="font-size: 0.75rem;">รายการเกมในคลังข้อมูล</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-3 rounded bg-dark border border-secondary text-center">
+                    <div class="text-white-50 small mb-1">👥 users (สมาชิก & แอดมิน)</div>
+                    <div class="fs-4 fw-bold text-white">{{ users.length }}</div>
+                    <div class="text-white-50" style="font-size: 0.75rem;">บัญชีผู้ใช้งานระบบ</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-3 rounded bg-dark border border-secondary text-center">
+                    <div class="text-white-50 small mb-1">🎟️ coupons (คูปองส่วนลด)</div>
+                    <div class="fs-4 fw-bold text-white">{{ Object.keys(coupons).length }}</div>
+                    <div class="text-white-50" style="font-size: 0.75rem;">โค้ดส่วนลดที่ใช้งานได้</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-3 rounded bg-dark border border-secondary text-center">
+                    <div class="text-white-50 small mb-1">📦 order_transactions</div>
+                    <div class="fs-4 fw-bold text-white">{{ orderTransactions.length }}</div>
+                    <div class="text-white-50" style="font-size: 0.75rem;">ประวัติคำสั่งซื้อทั้งหมด</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Database Management & Quick Tools -->
+              <div class="p-3 rounded bg-dark border border-secondary">
+                <h6 class="fw-bold text-white mb-2 d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-screwdriver-wrench text-red-light"></i> เครื่องมือจัดการฐานข้อมูล (Database Operations)
+                </h6>
+                <p class="small text-white-50 mb-3">
+                  ผู้ดูแลระบบสามารถกดติดตั้งโครงสร้างใหม่ หรือรีเซ็ตข้อมูลเริ่มต้น (Initial Seeds) รวมถึงเปิด phpMyAdmin ได้ทันที
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-sm btn-danger text-white fw-bold px-3 py-2" @click="resetAndSeedDb(); playSound('click')">
+                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> ติดตั้ง / รีเซ็ตโครงสร้างฐานข้อมูล (Re-seed DB)
+                  </button>
+                  <a href="http://localhost/phpmyadmin/index.php?route=/database/structure&db=amphoreus_db" target="_blank" class="btn btn-sm btn-outline-light px-3 py-2">
+                    <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> เปิด phpMyAdmin (amphoreus_db)
+                  </a>
+                  <a href="database.sql" download="amphoreus_db.sql" class="btn btn-sm btn-outline-secondary text-white px-3 py-2">
+                    <i class="fa-solid fa-download me-1"></i> ดาวน์โหลดไฟล์ database.sql
+                  </a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer modal-footer-cyber">
+            <button type="button" class="btn btn-outline-glass" data-bs-dismiss="modal">ปิดหน้าต่างแอดมิน</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: ADMIN ADD/EDIT GAME ================= -->
+    <div class="modal fade" id="adminGameModal" tabindex="-1" aria-hidden="true" v-if="isAdmin">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber">
+            <h5 class="modal-title fw-bold text-white">
+              <i class="fa-solid fa-gamepad text-danger me-2"></i> {{ isEditingGame ? 'แก้ไขข้อมูลเกม' :
+              'เพิ่มเกมใหม่เข้าสู่ร้านค้า' }}
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <form @submit.prevent="saveGameFromAdmin">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label text-white small">ชื่อเกมภาษาอังกฤษ (Title):</label>
+                  <input type="text" class="form-control bg-dark text-white border-secondary" v-model="gameForm.title"
+                    placeholder="เช่น Cyberpunk 2077" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-white small">ชื่อเกมภาษาไทย (Thai Title):</label>
+                  <input type="text" class="form-control bg-dark text-white border-secondary" v-model="gameForm.titleTh"
+                    placeholder="เช่น ไซเบอร์พังค์ 2077">
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label text-white small">หมวดหมู่เกม:</label>
+                  <select class="form-select bg-dark text-white border-secondary" v-model="gameForm.category">
+                    <option value="Action RPG">Action RPG</option>
+                    <option value="Open World">Open World</option>
+                    <option value="Shooter / Co-op">Shooter / Co-op</option>
+                    <option value="Horror / Action">Horror / Action</option>
+                    <option value="Racing / Sports">Racing / Sports</option>
+                    <option value="Gift Card / Topup">Gift Card / Topup</option>
+                    <option value="Survival / Indie">Survival / Indie</option>
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label text-white small">ราคาพิเศษ (บาท):</label>
+                  <input type="number" class="form-control bg-dark text-white border-secondary" v-model="gameForm.price"
+                    required>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label text-white small">ราคาเดิม (ก่อนลด):</label>
+                  <input type="number" class="form-control bg-dark text-white border-secondary"
+                    v-model="gameForm.originalPrice">
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label text-white small">ส่วนลด (%):</label>
+                  <input type="number" class="form-control bg-dark text-white border-secondary"
+                    v-model="gameForm.discount" placeholder="0 - 100">
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label text-white small">ค่ายผู้พัฒนา (Publisher):</label>
+                  <input type="text" class="form-control bg-dark text-white border-secondary"
+                    v-model="gameForm.publisher">
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label text-white small">แท็ก (Tags คั่นด้วยจุลภาค):</label>
+                  <input type="text" class="form-control bg-dark text-white border-secondary" v-model="gameForm.tags"
+                    placeholder="Action, Open World, RPG">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label text-white small">URL รูปภาพหน้าปก (Cover Image URL):</label>
+                  <input type="url" class="form-control bg-dark text-white border-secondary"
+                    v-model="gameForm.coverImage" required>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label text-white small">คำอธิบายเกม (Description):</label>
+                  <textarea class="form-control bg-dark text-white border-secondary" rows="3"
+                    v-model="gameForm.description"></textarea>
+                </div>
+              </div>
+
+              <div class="mt-4 text-end">
+                <button type="button" class="btn btn-outline-glass me-2" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="submit" class="btn btn-primary-gradient px-4">
+                  <i class="fa-solid fa-save me-1"></i> บันทึกข้อมูลเกม
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: GAME DETAILS ================= -->
+    <div class="modal fade" id="gameDetailModal" tabindex="-1" aria-hidden="true" v-if="selectedGame">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber">
+            <div>
+              <h4 class="modal-title fw-bold text-white mb-0">{{ selectedGame.title }}</h4>
+              <small class="text-muted">{{ selectedGame.titleTh }} • {{ selectedGame.publisher }}</small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <!-- Screenshots Gallery Preview -->
+            <div class="mb-3 rounded overflow-hidden position-relative" style="max-height: 380px;">
+              <img :src="activeScreenshot" class="w-100 object-fit-cover rounded border border-secondary"
+                style="height: 350px;" alt="Game Preview">
+              <span class="badge bg-danger position-absolute top-0 start-0 m-3 fs-6 border border-light"
+                v-if="selectedGame.discount > 0">
+                ลดพิเศษ -{{ selectedGame.discount }}%
+              </span>
+            </div>
+
+            <!-- Thumbnails Strip -->
+            <div class="d-flex gap-2 mb-4 overflow-x-auto pb-2"
+              v-if="selectedGame.screenshots && selectedGame.screenshots.length > 1">
+              <img v-for="(img, idx) in selectedGame.screenshots" :key="idx" :src="img"
+                class="rounded border border-secondary cursor-pointer"
+                :class="{ 'border-white border-2': activeScreenshot === img }"
+                style="width: 100px; height: 60px; object-fit: cover; cursor: pointer;"
+                @click="activeScreenshot = img; playSound('click')" alt="Screenshot">
+            </div>
+
+            <!-- Price & Quick Actions -->
+            <div
+              class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+              <div>
+                <div class="text-secondary small">ราคาพิเศษ (Digital Key แท้):</div>
+                <div class="fs-3 fw-bold text-white">
+                  {{ selectedGame.price.toLocaleString() }} ฿
+                  <span class="text-muted fs-6 text-decoration-line-through ms-2" v-if="selectedGame.discount > 0">
+                    {{ selectedGame.originalPrice.toLocaleString() }} ฿
+                  </span>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-glass" @click="toggleWishlist(selectedGame)">
+                  <i class="fa-solid fa-heart text-red-light me-1"></i> {{ isInWishlist(selectedGame.id) ?
+                  'อยู่ในสิ่งที่ชอบแล้ว' : 'ถูกใจ' }}
+                </button>
+                <button class="btn btn-primary-gradient px-4" @click="addToCart(selectedGame, selectedDetailPlatform)">
+                  <i class="fa-solid fa-cart-plus me-1"></i> เพิ่มลงตะกร้า
+                </button>
+              </div>
+            </div>
+
+            <!-- Platform Selector -->
+            <div class="mb-4">
+              <label class="form-label fw-bold text-white small">เลือกแพลตฟอร์มที่ต้องการ:</label>
+              <div class="d-flex gap-2">
+                <button v-for="p in selectedGame.platforms" :key="p" class="btn btn-sm"
+                  :class="selectedDetailPlatform === p ? 'btn-primary-gradient' : 'btn-outline-glass'"
+                  @click="selectedDetailPlatform = p; playSound('click')">
+                  <i class="fa-brands fa-windows" v-if="p==='PC'"></i>
+                  <i class="fa-brands fa-playstation" v-else-if="p==='PS5'"></i>
+                  <i class="fa-brands fa-xbox" v-else-if="p==='Xbox Series X'"></i>
+                  <i class="fa-solid fa-gamepad" v-else></i>
+                  {{ p }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <h5 class="fw-bold text-white mb-2">เกี่ยวกับเกมนี้ (Synopsis)</h5>
+            <p class="text-secondary leading-relaxed mb-4">{{ selectedGame.description }}</p>
+
+            <!-- Trailer Embed if available -->
+            <div class="mb-4" v-if="selectedGame.videoUrl">
+              <h5 class="fw-bold text-white mb-2"><i class="fa-brands fa-youtube text-danger me-1"></i> ตัวอย่างเกม
+                (Official Trailer)</h5>
+              <div class="ratio ratio-16x9 rounded overflow-hidden border border-secondary">
+                <iframe :src="selectedGame.videoUrl" title="Game Trailer" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <!-- System Requirements -->
+            <h5 class="fw-bold text-white mb-2" v-if="selectedGame.systemReq"><i
+                class="fa-solid fa-microchip text-red-light me-1"></i> ความต้องการของระบบ (System Requirements)</h5>
+            <div class="row g-3" v-if="selectedGame.systemReq">
+              <div class="col-md-6" v-if="selectedGame.systemReq.minimum">
+                <div class="sys-req-box">
+                  <h6 class="fw-bold text-white mb-2">สเปกขั้นต่ำ (Minimum)</h6>
+                  <dl class="mb-0">
+                    <dt>ระบบปฏิบัติการ:</dt>
+                    <dd>{{ selectedGame.systemReq.minimum.os }}</dd>
+                    <dt>หน่วยประมวลผล (CPU):</dt>
+                    <dd>{{ selectedGame.systemReq.minimum.cpu }}</dd>
+                    <dt>หน่วยความจำ (RAM):</dt>
+                    <dd>{{ selectedGame.systemReq.minimum.ram }}</dd>
+                    <dt>กราฟิก (GPU):</dt>
+                    <dd>{{ selectedGame.systemReq.minimum.gpu }}</dd>
+                    <dt>พื้นที่จัดเก็บ:</dt>
+                    <dd>{{ selectedGame.systemReq.minimum.storage }}</dd>
+                  </dl>
+                </div>
+              </div>
+              <div class="col-md-6" v-if="selectedGame.systemReq.recommended">
+                <div class="sys-req-box">
+                  <h6 class="fw-bold text-white mb-2">สเปกที่แนะนำ (Recommended)</h6>
+                  <dl class="mb-0">
+                    <dt>ระบบปฏิบัติการ:</dt>
+                    <dd>{{ selectedGame.systemReq.recommended.os }}</dd>
+                    <dt>หน่วยประมวลผล (CPU):</dt>
+                    <dd>{{ selectedGame.systemReq.recommended.cpu }}</dd>
+                    <dt>หน่วยความจำ (RAM):</dt>
+                    <dd>{{ selectedGame.systemReq.recommended.ram }}</dd>
+                    <dt>กราฟิก (GPU):</dt>
+                    <dd>{{ selectedGame.systemReq.recommended.gpu }}</dd>
+                    <dt>พื้นที่จัดเก็บ:</dt>
+                    <dd>{{ selectedGame.systemReq.recommended.storage }}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer modal-footer-cyber">
+            <button type="button" class="btn btn-outline-glass" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+            <button type="button" class="btn btn-primary-gradient px-4"
+              @click="addToCart(selectedGame, selectedDetailPlatform)">
+              <i class="fa-solid fa-cart-plus me-1"></i> เพิ่มลงตะกร้า ({{ selectedGame.price.toLocaleString() }} ฿)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= OFFCANVAS: SHOPPING CART ================= -->
+    <div class="offcanvas offcanvas-end offcanvas-custom" tabindex="-1" id="cartOffcanvas">
+      <div class="offcanvas-header border-bottom border-secondary p-3">
+        <h5 class="offcanvas-title fw-bold text-white">
+          <i class="fa-solid fa-cart-shopping text-red-light me-2"></i> ตะกร้าสินค้า ({{ cartCount }})
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+
+      <div class="offcanvas-body d-flex flex-column p-3">
+        <!-- Items List -->
+        <div class="flex-grow-1 overflow-y-auto" v-if="cart.length > 0">
+          <div class="cart-item-row" v-for="(item, idx) in cart" :key="idx">
+            <img :src="item.coverImage" :alt="item.title" class="cart-item-thumb">
+            <div class="flex-grow-1">
+              <h6 class="text-white mb-0 fw-bold" style="font-size: 0.92rem;">{{ item.title }}</h6>
+              <div class="text-muted small">{{ item.platform }}</div>
+              <div class="text-white fw-bold">{{ item.price.toLocaleString() }} ฿</div>
+            </div>
+
+            <!-- Quantity Controls -->
+            <div class="d-flex align-items-center gap-1">
+              <button class="btn btn-xs btn-outline-glass py-0 px-2" @click="updateQuantity(idx, -1)">-</button>
+              <span class="text-white small fw-bold px-1">{{ item.quantity }}</span>
+              <button class="btn btn-xs btn-outline-glass py-0 px-2" @click="updateQuantity(idx, 1)">+</button>
+              <button class="btn btn-link text-danger p-1 ms-1" @click="removeFromCart(idx)" title="ลบ">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="text-end">
+            <button class="btn btn-link text-muted btn-sm text-decoration-none" @click="clearCart">
+              <i class="fa-solid fa-trash me-1"></i> ล้างตะกร้าทั้งหมด
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty Cart State -->
+        <div class="text-center my-auto py-5" v-else>
+          <div class="fs-1 text-muted mb-2"><i class="fa-solid fa-cart-arrow-down text-red-light"></i></div>
+          <h5 class="text-white">ไม่มีสินค้าในตะกร้า</h5>
+          <p class="text-muted small">เลือกเกมที่คุณชื่นชอบแล้วกดสั่งซื้อได้เลย!</p>
+        </div>
+
+        <!-- Coupon & Pricing Summary Footer -->
+        <div class="mt-auto pt-3 border-top border-secondary" v-if="cart.length > 0">
+          <!-- Coupon Input -->
+          <div class="mb-3" v-if="!appliedCoupon">
+            <div class="input-group input-group-sm">
+              <input type="text" class="form-control bg-dark text-white border-secondary"
+                placeholder="โค้ดส่วนลด เช่น GAMEON10" v-model="couponCodeInput">
+              <button class="btn btn-outline-red" @click="applyCoupon">ใช้โค้ด</button>
+            </div>
+          </div>
+
+          <!-- Applied Coupon Banner -->
+          <div
+            class="alert alert-dark border border-light d-flex justify-content-between align-items-center py-2 px-3 mb-3 small"
+            v-else>
+            <div>
+              <i class="fa-solid fa-tag text-red-light me-1"></i> <strong>{{ appliedCoupon.code }}</strong> (-{{
+              discountAmount.toLocaleString() }} ฿)
+            </div>
+            <button class="btn btn-link text-danger p-0 text-decoration-none" @click="removeCoupon">ยกเลิก</button>
+          </div>
+
+          <!-- Subtotals -->
+          <div class="d-flex justify-content-between text-secondary small mb-1">
+            <span>ราคารวม:</span>
+            <span>{{ cartSubtotal.toLocaleString() }} ฿</span>
+          </div>
+          <div class="d-flex justify-content-between text-danger small mb-2" v-if="discountAmount > 0">
+            <span>ส่วนลดพิเศษ:</span>
+            <span>-{{ discountAmount.toLocaleString() }} ฿</span>
+          </div>
+          <div class="d-flex justify-content-between text-white fs-5 fw-bold mb-3">
+            <span>ยอดสุทธิ:</span>
+            <span class="text-white">{{ cartTotal.toLocaleString() }} ฿</span>
+          </div>
+
+          <!-- Checkout Trigger Button -->
+          <button class="btn btn-white-solid w-100 py-2 fs-6 fw-bold" data-bs-toggle="modal"
+            data-bs-target="#checkoutModal" @click="playSound('click')">
+            <i class="fa-solid fa-lock me-1"></i> ดำเนินการชำระเงิน ({{ cartTotal.toLocaleString() }} ฿)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: CHECKOUT SIMULATION ================= -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber">
+            <h5 class="modal-title fw-bold text-white">
+              <i class="fa-solid fa-credit-card text-red-light me-2"></i> ชำระเงินค่าสินค้า
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <!-- Order Summary mini box -->
+            <div class="bg-dark p-3 rounded border border-secondary mb-3">
+              <div class="d-flex justify-content-between mb-1 small text-secondary">
+                <span>จำนวนสินค้า:</span>
+                <span class="text-white fw-bold">{{ cartCount }} รายการ</span>
+              </div>
+              <div class="d-flex justify-content-between mb-1 small text-secondary" v-if="discountAmount > 0">
+                <span>ส่วนลดคูปอง:</span>
+                <span class="text-danger">-{{ discountAmount.toLocaleString() }} ฿</span>
+              </div>
+              <div class="d-flex justify-content-between fs-5 fw-bold text-white pt-2 border-top border-secondary">
+                <span>ยอดชำระทั้งหมด:</span>
+                <span class="text-white">{{ cartTotal.toLocaleString() }} ฿</span>
+              </div>
+            </div>
+
+            <!-- Email delivery input -->
+            <div class="mb-3">
+              <label class="form-label text-white small fw-bold">อีเมลรับคีย์เกม (Instant Digital Delivery):</label>
+              <input type="email" class="form-control bg-dark text-white border-secondary" v-model="checkoutEmail">
+            </div>
+
+            <!-- Payment Methods Selection -->
+            <label class="form-label text-white small fw-bold">เลือกช่องทางการชำระเงิน:</label>
+            <div class="d-grid gap-2 mb-3">
+              <label class="p-3 rounded border cursor-pointer d-flex align-items-center justify-content-between"
+                :class="checkoutPaymentMethod === 'Wallet' ? 'border-light bg-dark' : 'border-secondary bg-dark'">
+                <div class="d-flex align-items-center gap-3">
+                  <input type="radio" name="paymentMethod" value="Wallet" v-model="checkoutPaymentMethod">
+                  <div>
+                    <div class="fw-bold text-white"><i class="fa-solid fa-wallet text-red-light me-1"></i> Wallet
+                    </div>
+                    <small class="text-muted">ยอดคงเหลือ: {{ walletBalance.toLocaleString() }} ฿</small>
+                  </div>
+                </div>
+                <span class="badge bg-white text-dark" v-if="walletBalance >= cartTotal">พร้อมใช้งาน</span>
+                <span class="badge bg-danger" v-else>เงินไม่พอ</span>
+              </label>
+
+              <label class="p-3 rounded border cursor-pointer d-flex align-items-center justify-content-between"
+                :class="checkoutPaymentMethod === 'PromptPay' ? 'border-light bg-dark' : 'border-secondary bg-dark'">
+                <div class="d-flex align-items-center gap-3">
+                  <input type="radio" name="paymentMethod" value="PromptPay" v-model="checkoutPaymentMethod">
+                  <div>
+                    <div class="fw-bold text-white"><i class="fa-solid fa-qrcode text-white me-1"></i> พร้อมเพย์
+                      (PromptPay QR)</div>
+                    <small class="text-muted">สแกนจ่ายผ่านแอปธนาคารทุกแห่ง</small>
+                  </div>
+                </div>
+              </label>
+
+              <label class="p-3 rounded border cursor-pointer d-flex align-items-center justify-content-between"
+                :class="checkoutPaymentMethod === 'CreditCard' ? 'border-light bg-dark' : 'border-secondary bg-dark'">
+                <div class="d-flex align-items-center gap-3">
+                  <input type="radio" name="paymentMethod" value="CreditCard" v-model="checkoutPaymentMethod">
+                  <div>
+                    <div class="fw-bold text-white"><i class="fa-solid fa-credit-card text-red-light me-1"></i>
+                      บัตรเครดิต / เดบิต</div>
+                    <small class="text-muted">Visa, Mastercard, JCB</small>
+                  </div>
+                </div>
+              </label>
+
+              <label class="p-3 rounded border cursor-pointer d-flex align-items-center justify-content-between"
+                :class="checkoutPaymentMethod === 'TrueMoney' ? 'border-light bg-dark' : 'border-secondary bg-dark'">
+                <div class="d-flex align-items-center gap-3">
+                  <input type="radio" name="paymentMethod" value="TrueMoney" v-model="checkoutPaymentMethod">
+                  <div>
+                    <div class="fw-bold text-white"><i class="fa-solid fa-mobile-screen-button text-white me-1"></i>
+                      TrueMoney Wallet</div>
+                    <small class="text-muted">ตัดผ่านแอปทรูมันนี่</small>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <!-- PromptPay QR Simulation Box -->
+            <div class="text-center p-3 bg-dark rounded border border-secondary mb-3"
+              v-if="checkoutPaymentMethod === 'PromptPay'">
+              <div class="bg-white p-2 d-inline-block rounded mb-2">
+                <svg width="130" height="130" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="100" height="100" fill="white" />
+                  <rect x="10" y="10" width="25" height="25" fill="#000" />
+                  <rect x="15" y="15" width="15" height="15" fill="#fff" />
+                  <rect x="18" y="18" width="9" height="9" fill="#000" />
+                  <rect x="65" y="10" width="25" height="25" fill="#000" />
+                  <rect x="70" y="15" width="15" height="15" fill="#fff" />
+                  <rect x="73" y="18" width="9" height="9" fill="#000" />
+                  <rect x="10" y="65" width="25" height="25" fill="#000" />
+                  <rect x="15" y="70" width="15" height="15" fill="#fff" />
+                  <rect x="18" y="73" width="9" height="9" fill="#000" />
+                  <circle cx="50" cy="50" r="10" fill="#dc2626" />
+                  <rect x="42" y="15" width="6" height="20" fill="#000" />
+                  <rect x="52" y="25" width="6" height="15" fill="#000" />
+                  <rect x="42" y="65" width="20" height="6" fill="#000" />
+                  <rect x="68" y="68" width="18" height="18" fill="#000" />
+                </svg>
+              </div>
+              <div class="text-white fw-bold small">สแกนชำระเงิน {{ cartTotal.toLocaleString() }} บาท</div>
+              <small class="text-muted">ระบบจำลองการจ่ายเงิน กดปุ่มด้านล่างเพื่อยืนยัน</small>
+            </div>
+          </div>
+
+          <div class="modal-footer modal-footer-cyber">
+            <button type="button" class="btn btn-outline-glass" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="button" class="btn btn-white-solid px-4" @click="processCheckout" :disabled="isProcessing">
+              <span v-if="isProcessing" class="spinner-border spinner-border-sm me-1"></span>
+              <i class="fa-solid fa-check-circle me-1" v-else></i>
+              ยืนยันชำระเงิน {{ cartTotal.toLocaleString() }} ฿
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: TOP-UP WALLET ================= -->
+    <div class="modal fade" id="topupModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber">
+            <h5 class="modal-title fw-bold text-white">
+              <i class="fa-solid fa-wallet text-red-light me-2"></i> เติมเงินเข้า ----- Wallet
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <!-- Current Balance -->
+            <div
+              class="p-3 rounded bg-dark border border-secondary mb-3 d-flex justify-content-between align-items-center">
+              <span class="text-secondary">ยอดคงเหลือปัจจุบัน:</span>
+              <span class="fs-4 fw-bold text-white">{{ walletBalance.toLocaleString() }} ฿</span>
+            </div>
+
+            <!-- Quick Amounts -->
+            <label class="form-label text-white small fw-bold">เลือกจำนวนเงินที่ต้องการเติม:</label>
+            <div class="row g-2 mb-3">
+              <div class="col-4" v-for="amt in [100, 300, 500, 1000, 2000, 5000]" :key="amt">
+                <button class="btn w-100 py-2 fw-bold"
+                  :class="selectedTopupAmount === amt && !customTopupAmount ? 'btn-primary-gradient' : 'btn-outline-glass'"
+                  @click="selectedTopupAmount = amt; customTopupAmount = null; playSound('click')">
+                  +{{ amt.toLocaleString() }} ฿
+                </button>
+              </div>
+            </div>
+
+            <!-- Custom Amount Input -->
+            <div class="mb-3">
+              <label class="form-label text-white small">หรือระบุจำนวนเงินเอง:</label>
+              <div class="input-group">
+                <input type="number" class="form-control bg-dark text-white border-secondary" placeholder="เช่น 750"
+                  v-model="customTopupAmount">
+                <span class="input-group-text bg-dark border-secondary text-white">บาท</span>
+              </div>
+            </div>
+
+            <!-- Payment Provider -->
+            <label class="form-label text-white small fw-bold">ช่องทางเติมเงิน:</label>
+            <div class="d-flex gap-2 mb-3">
+              <button class="btn btn-sm flex-fill"
+                :class="topupPaymentMethod === 'PromptPay' ? 'btn-white-solid' : 'btn-outline-glass'"
+                @click="topupPaymentMethod = 'PromptPay'">
+                <i class="fa-solid fa-qrcode me-1"></i> พร้อมเพย์
+              </button>
+              <button class="btn btn-sm flex-fill"
+                :class="topupPaymentMethod === 'TrueMoney' ? 'btn-white-solid' : 'btn-outline-glass'"
+                @click="topupPaymentMethod = 'TrueMoney'">
+                <i class="fa-solid fa-mobile-screen me-1"></i> ทรูมันนี่
+              </button>
+              <button class="btn btn-sm flex-fill"
+                :class="topupPaymentMethod === 'CreditCard' ? 'btn-white-solid' : 'btn-outline-glass'"
+                @click="topupPaymentMethod = 'CreditCard'">
+                <i class="fa-solid fa-credit-card me-1"></i> บัตรเครดิต
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-footer modal-footer-cyber">
+            <button type="button" class="btn btn-outline-glass" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="button" class="btn btn-primary-gradient px-4 fw-bold" @click="processTopup"
+              :disabled="isProcessing">
+              <span v-if="isProcessing" class="spinner-border spinner-border-sm me-1"></span>
+              <i class="fa-solid fa-plus-circle me-1" v-else></i>
+              ยืนยันเติมเงิน (+{{ (customTopupAmount || selectedTopupAmount).toLocaleString() }} ฿)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- ================= MODAL: MY LIBRARY (คลังเกมของฉัน) ================= -->
+    <div class="modal fade" id="libraryModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="modal-title fw-bold text-white mb-0">
+                <i class="fa-solid fa-boxes-stacked text-red-light me-2"></i> คลังเกมและคีย์ของฉัน (My Game Library)
+              </h5>
+              <small class="text-muted" v-if="currentUser">
+                ผู้ครอบครอง: <span class="text-white fw-bold">{{ currentUser.name }}</span> ({{ currentUser.username }})
+              </small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <!-- กรณีที่ยังไม่ได้เข้าสู่ระบบ -->
+            <div class="text-center py-5" v-if="!currentUser">
+              <div class="display-3 text-muted mb-3"><i class="fa-solid fa-lock text-red-light"></i></div>
+              <h5 class="text-white">กรุณาเข้าสู่ระบบก่อน</h5>
+              <p class="text-secondary small">เข้าสู่ระบบเพื่อดูคลังเกมและ CD-Key ที่คุณเป็นผู้สั่งซื้อ</p>
+              <button class="btn btn-sm btn-primary-gradient px-4" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">
+                <i class="fa-solid fa-right-to-bracket me-1"></i> เข้าสู่ระบบทันที
+              </button>
+            </div>
+
+            <!-- กรณีที่มีเกมในคลังของผู้ใช้คนนี้ -->
+            <div v-else-if="purchasedLibrary.length > 0">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted small">เกมที่คุณเป็นเจ้าของทั้งหมด: <strong class="text-white">{{ purchasedLibrary.length }} เกม</strong></span>
+                <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50">
+                  <i class="fa-solid fa-circle-check me-1"></i> ลิขสิทธิ์เฉพาะบัญชีของคุณ
+                </span>
+              </div>
+              <div class="library-card mb-3" v-for="item in purchasedLibrary" :key="item.id">
+                <div class="row align-items-center g-3">
+                  <div class="col-3 col-md-2">
+                    <img :src="item.coverImage" :alt="item.gameTitle" class="w-100 rounded border border-secondary"
+                      style="height: 60px; object-fit: cover;">
+                  </div>
+                  <div class="col-9 col-md-5">
+                    <h6 class="text-white fw-bold mb-0">{{ item.gameTitle }}</h6>
+                    <div class="text-muted small">แพลตฟอร์ม: {{ item.platform }} • {{ item.purchaseDate }}</div>
+                  </div>
+                  <div class="col-12 col-md-5">
+                    <div class="cd-key-display">
+                      <span class="small">{{ item.key }}</span>
+                      <button class="btn btn-sm btn-outline-light py-0 px-2" @click="copyKey(item.key)"
+                        title="คัดลอกคีย์">
+                        <i class="fa-solid fa-copy"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- กรณีที่ยังไม่มีเกมในคลัง -->
+            <div class="text-center py-5" v-else>
+              <div class="display-3 text-muted mb-2"><i class="fa-solid fa-ghost text-red-light"></i></div>
+              <h5 class="text-white">คุณยังไม่มีเกมในคลัง</h5>
+              <p class="text-secondary small">เกมที่คุณสั่งซื้อจะมาปรากฏที่นี่พร้อม CD-Key เพื่อนำไปเปิดใช้งาน
+                (Activate)</p>
+            </div>
+          </div>
+
+          <div class="modal-footer modal-footer-cyber">
+            <button type="button" class="btn btn-outline-glass" data-bs-dismiss="modal">ปิด</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: WISHLIST ================= -->
+    <div class="modal fade" id="wishlistModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber">
+            <h5 class="modal-title fw-bold text-white">
+              <i class="fa-solid fa-heart text-red-light me-2"></i> รายการเกมที่ชอบ (Wishlist)
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <div v-if="wishlistGames.length > 0">
+              <div class="cart-item-row" v-for="g in wishlistGames" :key="g.id">
+                <img :src="g.coverImage" :alt="g.title" class="cart-item-thumb">
+                <div class="flex-grow-1">
+                  <h6 class="text-white fw-bold mb-0" style="font-size: 0.9rem;">{{ g.title }}</h6>
+                  <div class="text-white fw-bold">{{ g.price.toLocaleString() }} ฿</div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-primary-gradient py-1 px-2" @click="addToCart(g)" title="ใส่ตะกร้า">
+                    <i class="fa-solid fa-cart-plus"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-glass py-1 px-2 text-danger" @click="toggleWishlist(g)"
+                    title="ลบออก">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center py-4" v-else>
+              <div class="fs-1 text-muted mb-2"><i class="fa-regular fa-heart text-red-light"></i></div>
+              <h6 class="text-white">ยังไม่มีเกมในรายการโปรด</h6>
+              <p class="text-muted small">กดไอคอนหัวใจที่การ์ดเกมเพื่อบันทึกเกมที่เล็งไว้</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: COUPONS ================= -->
+    <div class="modal fade" id="couponsModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header modal-header-cyber">
+            <h5 class="modal-title fw-bold text-white">
+              <i class="fa-solid fa-ticket text-red-light me-2"></i> โค้ดส่วนลดประจำสัปดาห์
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <div class="d-grid gap-3">
+              <div class="p-3 bg-dark rounded border border-secondary d-flex justify-content-between align-items-center"
+                v-for="(c, code) in coupons" :key="code">
+                <div>
+                  <span class="badge bg-white text-dark fs-6 font-monospace mb-1 fw-bold">{{ c.code }}</span>
+                  <div class="text-white fw-bold">{{ c.description }}</div>
+                  <small class="text-muted">เมื่อมียอดซื้อขั้นต่ำ {{ c.minSpend }} บาท</small>
+                </div>
+                <button class="btn btn-sm btn-primary-gradient" @click="couponCodeInput=c.code; applyCoupon();"
+                  data-bs-dismiss="modal">
+                  ใช้โค้ดนี้
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer-custom">
+      <div class="container-fluid px-lg-5">
+        <div class="row g-4">
+          <!-- Brand Col -->
+          <div class="col-lg-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div class="brand-icon" style="width: 36px; height: 36px; font-size: 1rem;"><i
+                  class="fa-solid fa-gamepad text-white"></i></div>
+              <h4 class="text-white fw-bold mb-0">AMPHOREUS</h4>
+            </div>
+            <p class="text-secondary small leading-relaxed mb-3">
+              แพลตฟอร์มจำหน่ายเกมออนไลน์ Digital Key ลิขสิทธิ์แท้ 100% สำหรับ PC, PlayStation 5, Xbox Series X และ
+              Nintendo Switch ส่งมอบคีย์ทันใจ 24 ชั่วโมงด้วยระบบอัตโนมัติ
+            </p>
+            <div class="d-flex gap-3 text-secondary fs-5">
+              <a href="#" class="text-white hover-red"><i class="fa-brands fa-facebook"></i></a>
+              <a href="#" class="text-white hover-red"><i class="fa-brands fa-discord"></i></a>
+              <a href="#" class="text-white hover-red"><i class="fa-brands fa-x-twitter"></i></a>
+              <a href="#" class="text-white hover-red"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="col-6 col-md-3 col-lg-2">
+            <h6 class="text-white fw-bold mb-3">หมวดหมู่ยอดนิยม</h6>
+            <ul class="list-unstyled small text-secondary">
+              <li class="mb-2"><a href="#gamesCatalogSection" @click="setCategory('Action RPG')"
+                  class="text-secondary text-decoration-none">Action RPG</a></li>
+              <li class="mb-2"><a href="#gamesCatalogSection" @click="setCategory('Open World')"
+                  class="text-secondary text-decoration-none">Open World</a></li>
+              <li class="mb-2"><a href="#gamesCatalogSection" @click="setCategory('Shooter / Co-op')"
+                  class="text-secondary text-decoration-none">Shooter / Co-op</a></li>
+              <li class="mb-2"><a href="#gamesCatalogSection" @click="setCategory('Gift Card / Topup')"
+                  class="text-secondary text-decoration-none">Gift Card & Topup</a></li>
+            </ul>
+          </div>
+
+          <!-- Customer Care -->
+          <div class="col-6 col-md-3 col-lg-2">
+            <h6 class="text-white fw-bold mb-3">ช่วยเหลือ & บริการ</h6>
+            <ul class="list-unstyled small text-secondary">
+              <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#topupModal"
+                  class="text-secondary text-decoration-none">วิธีเติมเงิน Wallet</a></li>
+              <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#libraryModal"
+                  class="text-secondary text-decoration-none">วิธีเปิดใช้งาน CD-Key</a></li>
+              <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                  class="text-secondary text-decoration-none">เข้าสู่ระบบ / สมัครสมาชิก</a></li>
+              <li class="mb-2"><a href="#" class="text-secondary text-decoration-none">ติดต่อฝ่ายบริการลูกค้า</a></li>
+            </ul>
+          </div>
+
+          <!-- Student Project Credit -->
+          <div class="col-lg-4">
+            <div class="p-3 bg-dark rounded border border-secondary">
+              <h6 class="text-white fw-bold mb-2"><i class="fa-solid fa-graduation-cap text-red-light me-2"></i>
+                ข้อมูลโครงงาน / ผู้พัฒนา</h6>
+              <div class="small text-secondary mb-1">
+                <strong>ผู้พัฒนา:</strong> นายรัชต สิทธิวงศ์ (Rachata Sitthiwong)
+              </div>
+              <div class="small text-secondary mb-1">
+                <strong>รหัสนักศึกษา:</strong> 68122420110
+              </div>
+              <div class="small text-secondary mb-2">
+                <strong>สาขาวิชา:</strong> วิทยาการคอมพิวเตอร์ มหาวิทยาลัยราชภัฏสุรินทร์
+              </div>
+              <div class="small text-white font-monospace">
+                Frameworks: Vue.js 3 + Bootstrap 5.3.3 (RBAC & Auth System)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Copyright Bottom Bar -->
+        <div
+          class="border-top border-secondary mt-4 pt-3 text-center text-secondary small d-flex justify-content-between flex-wrap gap-2">
+          <div>
+            © 2026 AMPHOREUS STORE. All Rights Reserved. ผลงานโครงงานพัฒนาเว็บไซต์ขายเกมออนไลน์
+          </div>
+          <div class="d-flex gap-3">
+            <span><i class="fa-solid fa-shield-check text-red-light me-1"></i> SSL 256-Bit Encrypted</span>
+            <span><i class="fa-solid fa-bolt text-white me-1"></i> Instant Delivery 24/7</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+
+    <!-- ================= PROFILE SETTINGS MODAL ================= -->
+    <div class="modal fade" id="profileSettingsModal" tabindex="-1" aria-labelledby="profileSettingsModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content modal-content-cyber">
+          <div class="modal-header border-0 pb-0">
+            <div class="d-flex align-items-center gap-3">
+              <div class="modal-icon-badge">
+                <i class="fa-solid fa-user-pen text-white"></i>
+              </div>
+              <div>
+                <h5 class="modal-title fw-bold text-white mb-0" id="profileSettingsModalLabel">ตั้งค่าโปรไฟล์</h5>
+                <small class="text-muted">จัดการข้อมูลบัญชีและการตั้งค่าส่วนตัว</small>
+              </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body pt-4" v-if="currentUser">
+            <!-- Profile Tabs -->
+            <ul class="nav nav-pills profile-tabs mb-4" id="profileTabs">
+              <li class="nav-item">
+                <button class="profile-tab-btn active" id="tab-info" @click="profileActiveTab = 'info'">
+                  <i class="fa-solid fa-id-card me-2"></i>ข้อมูลส่วนตัว
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="profile-tab-btn" id="tab-avatar" @click="profileActiveTab = 'avatar'">
+                  <i class="fa-solid fa-image-portrait me-2"></i>รูปโปรไฟล์
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="profile-tab-btn" id="tab-security" @click="profileActiveTab = 'security'">
+                  <i class="fa-solid fa-shield-halved me-2"></i>ความปลอดภัย
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="profile-tab-btn" id="tab-prefs" @click="profileActiveTab = 'prefs'">
+                  <i class="fa-solid fa-sliders me-2"></i>การตั้งค่า
+                </button>
+              </li>
+            </ul>
+
+            <!-- ── TAB: ข้อมูลส่วนตัว ── -->
+            <div v-show="profileActiveTab === 'info'">
+              <!-- Profile Card Preview -->
+              <div class="profile-preview-card mb-4">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="profile-avatar-wrapper">
+                    <img :src="profileForm.avatar || currentUser.avatar" :alt="profileForm.name"
+                      class="profile-avatar-lg">
+                    <span class="profile-role-badge" :class="isAdmin ? 'badge-admin' : 'badge-member'">
+                      <i class="fa-solid fa-crown" v-if="isAdmin"></i>
+                      {{ currentUser.role }}
+                    </span>
+                  </div>
+                  <div>
+                    <div class="fw-bold text-white fs-5">{{ profileForm.name || currentUser.name }}</div>
+                    <div class="text-muted small">{{ currentUser.username }}</div>
+                    <div class="text-muted small mt-1">
+                      <i class="fa-solid fa-calendar-days text-red-light me-1"></i>
+                      สมาชิกตั้งแต่: {{ currentUser.joinedDate || 'N/A' }}
+                    </div>
+                    <div class="mt-2">
+                      <span class="wallet-stat-pill">
+                        <i class="fa-solid fa-wallet text-red-light"></i>
+                        {{ walletBalance.toLocaleString() }} ฿
+                      </span>
+                      <span class="games-stat-pill ms-2">
+                        <i class="fa-solid fa-gamepad text-white"></i>
+                        {{ purchasedLibrary.length }} เกม
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form: Edit Name & Bio -->
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label-cyber">ชื่อแสดงผล <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control-cyber" v-model="profileForm.name"
+                    placeholder="ชื่อที่ต้องการแสดง" maxlength="50">
+                  <div class="form-hint">ชื่อนี้จะแสดงบน Navbar และโปรไฟล์ของคุณ</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label-cyber">อีเมล (Username)</label>
+                  <input type="email" class="form-control-cyber" :value="currentUser.username" disabled>
+                  <div class="form-hint">ไม่สามารถเปลี่ยนอีเมลได้</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label-cyber">คำอธิบายตัวเอง (Bio)</label>
+                  <textarea class="form-control-cyber" v-model="profileForm.bio" rows="3"
+                    placeholder="เขียนบางอย่างเกี่ยวกับตัวเอง... เช่น เกมที่ชอบ แนว gameplay ที่ถนัด"
+                    maxlength="200"></textarea>
+                  <div class="form-hint text-end">{{ (profileForm.bio || '').length }}/200</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label-cyber">ประเทศ / ภูมิภาค</label>
+                  <select class="form-control-cyber" v-model="profileForm.country">
+                    <option value="TH">🇹🇭 ประเทศไทย</option>
+                    <option value="US">🇺🇸 United States</option>
+                    <option value="JP">🇯🇵 Japan</option>
+                    <option value="KR">🇰🇷 South Korea</option>
+                    <option value="SG">🇸🇬 Singapore</option>
+                    <option value="GB">🇬🇧 United Kingdom</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label-cyber">แพลตฟอร์มที่ชื่นชอบ</label>
+                  <select class="form-control-cyber" v-model="profileForm.favPlatform">
+                    <option value="PC">🖥️ PC (Steam)</option>
+                    <option value="PS5">🎮 PlayStation 5</option>
+                    <option value="Xbox">🟢 Xbox Series X</option>
+                    <option value="Switch">🕹️ Nintendo Switch</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end mt-4">
+                <button class="btn-profile-save" @click="saveProfileInfo">
+                  <i class="fa-solid fa-floppy-disk me-2"></i>บันทึกข้อมูล
+                </button>
+              </div>
+            </div>
+
+            <!-- ── TAB: รูปโปรไฟล์ ── -->
+            <div v-show="profileActiveTab === 'avatar'">
+              <div class="text-center mb-4">
+                <div class="avatar-preview-circle mx-auto mb-3">
+                  <img :src="profileForm.avatar || currentUser.avatar" alt="avatar preview"
+                    class="w-100 h-100 rounded-circle object-fit-cover">
+                </div>
+                <div class="fw-bold text-white">{{ currentUser.name }}</div>
+                <small class="text-muted">{{ currentUser.username }}</small>
+              </div>
+
+              <label class="form-label-cyber mb-2">เลือกรูปโปรไฟล์จาก URL</label>
+              <div class="input-group mb-3">
+                <input type="url" class="form-control-cyber flex-grow-1" v-model="profileForm.avatar"
+                  placeholder="https://example.com/avatar.jpg">
+                <button class="btn btn-outline-secondary ms-2 rounded" @click="profileForm.avatar = currentUser.avatar"
+                  style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); color: #fff;">
+                  <i class="fa-solid fa-rotate-left"></i>
+                </button>
+              </div>
+
+              <!-- Preset Avatars -->
+              <div class="form-label-cyber mb-3">หรือเลือกจาก Avatar สำเร็จรูป</div>
+              <div class="avatar-grid">
+                <div v-for="(av, idx) in presetAvatars" :key="idx" class="avatar-preset-item"
+                  :class="{ 'selected': profileForm.avatar === av.url }" @click="profileForm.avatar = av.url"
+                  :title="av.label">
+                  <img :src="av.url" :alt="av.label">
+                  <div class="avatar-label">{{ av.label }}</div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end mt-4">
+                <button class="btn-profile-save" @click="saveProfileAvatar">
+                  <i class="fa-solid fa-floppy-disk me-2"></i>บันทึกรูปโปรไฟล์
+                </button>
+              </div>
+            </div>
+
+            <!-- ── TAB: ความปลอดภัย ── -->
+            <div v-show="profileActiveTab === 'security'">
+              <div class="security-notice mb-4">
+                <i class="fa-solid fa-circle-info text-red-light me-2"></i>
+                เพื่อความปลอดภัย กรุณาใส่รหัสผ่านปัจจุบันก่อนเปลี่ยนรหัสผ่านใหม่
+              </div>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label-cyber">รหัสผ่านปัจจุบัน <span class="text-danger">*</span></label>
+                  <div class="password-input-wrap">
+                    <input :type="showCurrentPw ? 'text' : 'password'" class="form-control-cyber"
+                      v-model="passwordForm.current" placeholder="กรอกรหัสผ่านปัจจุบัน">
+                    <button class="pw-toggle-btn" @click="showCurrentPw = !showCurrentPw">
+                      <i :class="showCurrentPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label-cyber">รหัสผ่านใหม่ <span class="text-danger">*</span></label>
+                  <div class="password-input-wrap">
+                    <input :type="showNewPw ? 'text' : 'password'" class="form-control-cyber"
+                      v-model="passwordForm.newPw" placeholder="รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)">
+                    <button class="pw-toggle-btn" @click="showNewPw = !showNewPw">
+                      <i :class="showNewPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                    </button>
+                  </div>
+                  <!-- Password Strength -->
+                  <div class="pw-strength-bar mt-2" v-if="passwordForm.newPw">
+                    <div class="pw-strength-fill" :class="pwStrengthClass" :style="{ width: pwStrengthWidth }"></div>
+                  </div>
+                  <div class="form-hint" v-if="passwordForm.newPw">ความแข็งแกร่ง: <span :class="pwStrengthTextClass">{{
+                      pwStrengthLabel }}</span></div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label-cyber">ยืนยันรหัสผ่านใหม่ <span class="text-danger">*</span></label>
+                  <div class="password-input-wrap">
+                    <input :type="showConfirmPw ? 'text' : 'password'" class="form-control-cyber"
+                      v-model="passwordForm.confirm" placeholder="ยืนยันรหัสผ่านใหม่">
+                    <button class="pw-toggle-btn" @click="showConfirmPw = !showConfirmPw">
+                      <i :class="showConfirmPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                    </button>
+                  </div>
+                  <div class="form-hint text-danger"
+                    v-if="passwordForm.confirm && passwordForm.newPw !== passwordForm.confirm">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i>รหัสผ่านไม่ตรงกัน
+                  </div>
+                  <div class="form-hint text-success"
+                    v-if="passwordForm.confirm && passwordForm.newPw === passwordForm.confirm && passwordForm.confirm.length > 0">
+                    <i class="fa-solid fa-circle-check me-1"></i>รหัสผ่านตรงกัน
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end mt-4">
+                <button class="btn-profile-save" @click="savePassword">
+                  <i class="fa-solid fa-lock me-2"></i>เปลี่ยนรหัสผ่าน
+                </button>
+              </div>
+            </div>
+
+            <!-- ── TAB: การตั้งค่า ── -->
+            <div v-show="profileActiveTab === 'prefs'">
+              <div class="pref-section mb-4">
+                <div class="pref-section-title">
+                  <i class="fa-solid fa-bell text-red-light me-2"></i>การแจ้งเตือน
+                </div>
+                <div class="pref-item">
+                  <div>
+                    <div class="pref-label">แจ้งเตือนโปรโมชั่นและส่วนลด</div>
+                    <div class="pref-hint">รับข่าวสารดีลพิเศษและโค้ดส่วนลด</div>
+                  </div>
+                  <div class="toggle-switch" :class="{ 'active': profilePrefs.notifPromo }"
+                    @click="profilePrefs.notifPromo = !profilePrefs.notifPromo">
+                    <div class="toggle-knob"></div>
+                  </div>
+                </div>
+                <div class="pref-item">
+                  <div>
+                    <div class="pref-label">แจ้งเตือนเมื่อมีอัปเดตเกม</div>
+                    <div class="pref-hint">รับแจ้งเตือนเมื่อเกมในคลังมีแพตช์ใหม่</div>
+                  </div>
+                  <div class="toggle-switch" :class="{ 'active': profilePrefs.notifUpdates }"
+                    @click="profilePrefs.notifUpdates = !profilePrefs.notifUpdates">
+                    <div class="toggle-knob"></div>
+                  </div>
+                </div>
+                <div class="pref-item">
+                  <div>
+                    <div class="pref-label">อีเมลยืนยันทุกการซื้อ</div>
+                    <div class="pref-hint">ส่งใบเสร็จทางอีเมลหลังทุกออเดอร์</div>
+                  </div>
+                  <div class="toggle-switch" :class="{ 'active': profilePrefs.notifOrders }"
+                    @click="profilePrefs.notifOrders = !profilePrefs.notifOrders">
+                    <div class="toggle-knob"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pref-section mb-4">
+                <div class="pref-section-title">
+                  <i class="fa-solid fa-volume-high text-red-light me-2"></i>เสียงและแอนิเมชั่น
+                </div>
+                <div class="pref-item">
+                  <div>
+                    <div class="pref-label">เสียงเอฟเฟกต์ UI</div>
+                    <div class="pref-hint">เสียงเมื่อกดปุ่ม ซื้อเกม และรับรางวัล</div>
+                  </div>
+                  <div class="toggle-switch" :class="{ 'active': isSoundEnabled }" @click="toggleSound()">
+                    <div class="toggle-knob"></div>
+                  </div>
+                </div>
+                <div class="pref-item">
+                  <div>
+                    <div class="pref-label">เอฟเฟกต์ Confetti</div>
+                    <div class="pref-hint">แสดงกระดาษสีสันเมื่อสมัครสมาชิกหรือชำระเงิน</div>
+                  </div>
+                  <div class="toggle-switch" :class="{ 'active': profilePrefs.confetti }"
+                    @click="profilePrefs.confetti = !profilePrefs.confetti">
+                    <div class="toggle-knob"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pref-section mb-4">
+                <div class="pref-section-title">
+                  <i class="fa-solid fa-eye text-red-light me-2"></i>การแสดงผล
+                </div>
+                <div class="pref-item">
+                  <div>
+                    <div class="pref-label">แสดงยอดเงิน Wallet บน Navbar</div>
+                    <div class="pref-hint">ซ่อน/แสดงยอดเงินสำหรับความเป็นส่วนตัว</div>
+                  </div>
+                  <div class="toggle-switch" :class="{ 'active': profilePrefs.showWallet }"
+                    @click="profilePrefs.showWallet = !profilePrefs.showWallet">
+                    <div class="toggle-knob"></div>
+                  </div>
+                </div>
+                <div class="pref-item">
+                  <div>
+                    <div class="pref-label">แสดงรายการโปรดสาธารณะ</div>
+                    <div class="pref-hint">ผู้ใช้อื่นสามารถดูรายการ Wishlist ของคุณได้</div>
+                  </div>
+                  <div class="toggle-switch" :class="{ 'active': profilePrefs.publicWishlist }"
+                    @click="profilePrefs.publicWishlist = !profilePrefs.publicWishlist">
+                    <div class="toggle-knob"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end mt-2">
+                <button class="btn-profile-save" @click="savePreferences">
+                  <i class="fa-solid fa-floppy-disk me-2"></i>บันทึกการตั้งค่า
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer border-0 pt-0">
+            <div class="text-muted small me-auto">
+              <i class="fa-solid fa-shield-check text-red-light me-1"></i>
+              ข้อมูลของคุณถูกเก็บไว้ในเครื่องอย่างปลอดภัย
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary text-muted"
+              data-bs-dismiss="modal">ปิด</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ================= END PROFILE SETTINGS MODAL ================= -->
+
+  </div>
+
+  <!-- Framework Dependencies (CDN) -->
+  <!-- 1. Bootstrap 5.3.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- 2. Vue.js 3 Production Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
+
+  <!-- 3. SweetAlert2 for Gorgeous Dialogs -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- 4. Canvas Confetti for Celebration Effects -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <!-- 5. Catalog & Users Data -->
+  <script src="js/games-data.js"></script>
+
+  <!-- 6. Vue 3 Application Controller -->
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>
